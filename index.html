@@ -185,6 +185,28 @@ section{padding:70px 0}
 .ptag.sm{font-size:1.3rem;padding:4px 9px 2px;border-width:2.5px;box-shadow:2px 2px 0 var(--red)}
 .ptag.big{font-size:1.5rem;margin-left:auto}
 .sig-photo .ptag{position:absolute;top:10px;right:10px;z-index:2}
+/* style drop-down */
+.dropdown{background:#fff;border:3px solid var(--ink);border-radius:24px;box-shadow:6px 6px 0 var(--red);margin-bottom:8px;overflow:hidden}
+.drop-head{width:100%;display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--yellow);border:0;border-bottom:3px solid transparent;padding:16px 20px;cursor:pointer;text-align:left;font:inherit;color:var(--ink);transition:background .15s}
+.drop-head:hover{background:#ffd23f}
+.dropdown.open .drop-head{border-bottom-color:var(--ink)}
+.drop-head .num{font-family:Bangers,Impact,sans-serif;font-size:1.3rem;letter-spacing:1px;background:var(--ink);color:var(--yellow);padding:6px 14px;border-radius:10px;transform:rotate(-3deg)}
+.drop-title{font-family:Bangers,Impact,sans-serif;font-size:2.4rem;letter-spacing:1.2px;line-height:1}
+.drop-count{background:#fff;border:2.5px solid var(--ink);border-radius:999px;padding:4px 12px;font-weight:900;font-size:.85rem}
+.chev{margin-left:auto;width:46px;height:46px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-size:1.5rem;border:3px solid var(--ink);box-shadow:2px 2px 0 var(--ink);transition:transform .3s}
+.dropdown.open .chev{transform:rotate(180deg)}
+.peek-strip{display:flex;gap:10px;padding:14px 20px;overflow-x:auto;cursor:pointer;scrollbar-width:thin}
+.peek-strip img{width:76px;height:76px;flex:none;border-radius:50%;object-fit:cover;border:3px solid var(--ink);background:#FDF1DC;transition:transform .15s}
+.peek-strip img:nth-child(odd){transform:rotate(-4deg)}
+.peek-strip img:nth-child(even){transform:rotate(4deg)}
+.peek-strip img:hover{transform:scale(1.12)}
+.peek-strip .more{flex:none;align-self:center;font-weight:900;color:var(--red);white-space:nowrap;padding-left:6px}
+.dropdown.open .peek-strip{display:none}
+.drop-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease}
+.dropdown.open .drop-body{grid-template-rows:1fr}
+.drop-inner{overflow:hidden}
+.drop-inner .sig-grid{padding:20px}
+@media(max-width:600px){.drop-title{font-size:1.9rem}.chev{width:40px;height:40px}}
 /* gallery */
 .gallery{background:var(--ink);color:#fff;position:relative;overflow:hidden}
 .gallery .section-head h2{color:var(--yellow)}
@@ -443,8 +465,16 @@ const SIDES = [
     <div class="panel active" id="p-dogs">
       <div class="step"><span class="num">STEP 1</span><h3>Choose your dog</h3><span class="ptag red big">ANY DOG $7</span></div>
       <div class="dog-types" id="dogTypes"></div>
-      <div class="step"><span class="num">STEP 2</span><h3>Choose your style</h3></div>
-      <div class="sig-grid" id="sigGrid"></div>
+      <div class="dropdown" id="styleDrop">
+        <button class="drop-head" id="styleToggle" aria-expanded="false" aria-controls="styleBody">
+          <span class="num">STEP 2</span>
+          <span class="drop-title">Choose your style</span>
+          <span class="drop-count" id="dropCount">Tap to see all 13</span>
+          <span class="chev" aria-hidden="true">▾</span>
+        </button>
+        <div class="peek-strip" id="peekStrip" aria-hidden="true"></div>
+        <div class="drop-body" id="styleBody"><div class="drop-inner"><div class="sig-grid" id="sigGrid"></div></div></div>
+      </div>
       <div class="byo">
         <img src="img/mascot.png" alt="">
         <div>
@@ -636,6 +666,10 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));
   document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="p-"+b.dataset.t));
 });
+$("#peekStrip").innerHTML=SIGNATURE.map(d=>`<img src="${d.img}" alt="" title="${esc(d.name)}" loading="lazy">`).join("");
+const setStyles=open=>{$("#styleDrop").classList.toggle("open",open);$("#styleToggle").setAttribute("aria-expanded",open);$("#dropCount").textContent=open?"Tap to close":"Tap to see all 13"};
+$("#styleToggle").onclick=()=>setStyles(!$("#styleDrop").classList.contains("open"));
+$("#peekStrip").onclick=()=>setStyles(true);
 $("#tchips").innerHTML=TOPPINGS.map(t=>`<span>${t}</span>`).join("");
 $("#comboList").innerHTML=COMBOS.map(c=>`<div class="combo"><div class="n">${c.n}</div>
   <div><h4>${c.desc}</h4><small>${c.sub}</small>${addBtn(c,"Customize")}</div><span class="ptag red">$${c.price}</span></div>`).join("");
