@@ -196,11 +196,10 @@ section{padding:70px 0}
 .chev{margin-left:auto;width:46px;height:46px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-size:1.5rem;border:3px solid var(--ink);box-shadow:2px 2px 0 var(--ink);transition:transform .3s}
 .dropdown.open .chev{transform:rotate(180deg)}
 .peek-strip{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;padding:18px 20px 20px;align-items:start}
-.spicy-box{display:grid;grid-template-columns:auto auto;gap:12px 10px;padding:12px 18px 14px 12px;background:#FFF1EC;border:2.5px dashed var(--red);border-radius:16px;position:relative}
-.spicy-box::before{content:"🔥 SPICY ONES";grid-column:1/-1;font-family:Bangers,Impact,sans-serif;letter-spacing:1.5px;color:var(--red);font-size:1rem;line-height:1}
+.spicy-box{display:grid;grid-template-columns:auto auto;gap:12px 10px;align-content:start;justify-items:start;padding-top:6px}
 .mild-box{display:flex;flex-wrap:wrap;gap:12px 10px;align-content:flex-start;padding-top:6px}
 .peek-strip span{cursor:pointer;text-align:center}
-@media(max-width:700px){.peek-strip{grid-template-columns:minmax(0,1fr);padding:14px}.spicy-box{grid-template-columns:minmax(0,1fr) minmax(0,1fr);padding:12px 10px}.peek-strip div span{white-space:normal;font-size:1rem;padding:6px 9px 4px}}
+@media(max-width:700px){.peek-strip{grid-template-columns:minmax(0,1fr);padding:14px}.spicy-box{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.peek-strip div span{white-space:normal;font-size:1rem;padding:6px 9px 4px}}
 .peek-strip span{background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:6px 12px 4px;box-shadow:3px 3px 0 var(--ink);font-family:Bangers,Impact,sans-serif;font-size:1.15rem;letter-spacing:1px;line-height:1;text-transform:uppercase;white-space:nowrap;transition:transform .15s,background .15s}
 .peek-strip span:nth-child(3n+1){transform:rotate(-3deg)}
 .peek-strip span:nth-child(3n+2){transform:rotate(2deg)}
@@ -687,7 +686,7 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));
   document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="p-"+b.dataset.t));
 });
-const nameChip=(d,i)=>`<span role="button" tabindex="0" data-i="${i}" class="${d.spicy?"hot":""}">${d.name}</span>`;
+const nameChip=(d,i)=>`<span role="button" tabindex="0" data-i="${i}" class="${d.spicy?"hot":""}">${d.spicy?"🔥 ":""}${d.name}</span>`;
 $("#peekStrip").innerHTML=`<div class="spicy-box">${SIGNATURE.map((d,i)=>d.spicy?nameChip(d,i):"").join("")}</div><div class="mild-box">${SIGNATURE.map((d,i)=>d.spicy?"":nameChip(d,i)).join("")}</div>`;
 let selDog=-1;
 function setStyles(mode,i){
