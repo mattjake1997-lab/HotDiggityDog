@@ -361,7 +361,8 @@ const SIGNATURE = [
   {name:"Chicago Dog", img:"img/chicago.jpg", tops:["Tomato wedges","Spicy brown mustard","Pickles","Sport peppers","Onions","Relish","Celery salt"]},
   {name:"BLT Dog", img:"img/blt.jpg", tops:["Chipotle mayo","Bacon","Tomato wedges","Shredded lettuce"]},
   {name:"Street Dog", img:"img/street.jpg", tops:["Ketchup","Mustard","Relish"]}
-].map(d=>({...d, price:7, kind:"dog", pick:DOGS, desc:d.desc||d.tops.join(", ")}));
+].map(d=>({...d, price:7, kind:"dog", pick:DOGS, desc:d.desc||d.tops.join(", ")}))
+ .sort((a,b)=>(b.spicy?1:0)-(a.spicy?1:0)); // spicy dogs grouped first
 
 const BYO = {name:"Build Your Own Dog", price:7, kind:"dog", pick:DOGS, tops:[], byo:true, img:"img/street.jpg", desc:"Pick your dog and up to 5 toppings. Each extra topping is 50¢."};
 
