@@ -202,7 +202,21 @@ section{padding:70px 0}
 .peek-strip span:nth-child(3n){transform:rotate(-1deg)}
 .peek-strip span.hot{color:var(--red)}
 .peek-strip span:hover{transform:rotate(0) scale(1.08);background:var(--yellow)}
-.dropdown.open .peek-strip{display:none}
+.dropdown.open.all .peek-strip{display:none}
+.dropdown.one .sig-grid{display:none}
+.dropdown:not(.one) #sigOne{display:none}
+.peek-strip span.sel{background:var(--red);color:#fff!important;transform:rotate(0) scale(1.08)}
+.feature{display:grid;grid-template-columns:1.1fr 1fr;gap:0;margin:0 20px 20px;border:3px solid var(--ink);border-radius:20px;overflow:hidden;box-shadow:5px 5px 0 var(--ink);animation:fadeUp .3s ease}
+.feature .sig-photo{height:auto;min-height:230px;border-bottom:0;border-right:3px dashed #e9d3a8}
+.feature .sig-photo img{max-height:220px}
+.feature .sig-body{padding:22px}
+.feature .sig-body h4{font-size:2rem}
+.feature .sig-body p{font-size:1.02rem}
+.feature .tops-list{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.feature .tops-list span{background:var(--yellow);border-radius:999px;padding:4px 11px;font-weight:800;font-size:.85rem}
+.feature .sig-foot{justify-content:flex-start;gap:10px}
+.feature .add{background:var(--red);color:#fff;box-shadow:0 4px 0 var(--red-dark);font-size:1rem;padding:12px 22px}
+@media(max-width:640px){.feature{grid-template-columns:1fr}.feature .sig-photo{border-right:0;border-bottom:3px dashed #e9d3a8;min-height:180px}}
 .drop-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease}
 .dropdown.open .drop-body{grid-template-rows:1fr}
 .drop-inner{overflow:hidden}
@@ -474,7 +488,7 @@ const SIDES = [
           <span class="chev" aria-hidden="true">▾</span>
         </button>
         <div class="peek-strip" id="peekStrip" aria-hidden="true"></div>
-        <div class="drop-body" id="styleBody"><div class="drop-inner"><div class="sig-grid" id="sigGrid"></div></div></div>
+        <div class="drop-body" id="styleBody"><div class="drop-inner"><div id="sigOne"></div><div class="sig-grid" id="sigGrid"></div></div></div>
       </div>
       <div class="byo">
         <img src="img/mascot.png" alt="">
@@ -658,7 +672,7 @@ if(sp.img){$("#spImg").src=sp.img;$("#spImg").alt=sp.name}
 if(ORDER)$("#spAdd").onclick=()=>openCz(sp);
 
 /* menu render */
-$("#dogTypes").innerHTML=DOGS.map(d=>`<div class="dog-type"><h4>${d}</h4><small>${d==="Veggie Dog"?"plant-based option":"jumbo and juicy"}</small></div>`).join("")+`<div class="dog-type" style="display:grid;place-items:center;border:0;box-shadow:none;background:none"><div class="price-burst">$7</div></div>`;
+$("#dogTypes").innerHTML=DOGS.map(d=>`<div class="dog-type"><h4>${d}</h4><small>${d==="Veggie Dog"?"plant-based option":"jumbo and juicy"}</small></div>`).join("");
 $("#sigGrid").innerHTML=SIGNATURE.map(d=>`<div class="sig">
   <div class="sig-photo">${d.spicy?'<span class="spicy">🔥 SPICY</span>':""}<span class="ptag">$${d.price}</span><img src="${d.img}" alt="${esc(d.name)}" loading="lazy"></div>
   <div class="sig-body"><h4>${d.name}</h4><p>${d.desc}</p>
@@ -667,10 +681,26 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));
   document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="p-"+b.dataset.t));
 });
-$("#peekStrip").innerHTML=SIGNATURE.map(d=>`<span class="${d.spicy?"hot":""}">${d.spicy?"🔥 ":""}${d.name}</span>`).join("");
-const setStyles=open=>{$("#styleDrop").classList.toggle("open",open);$("#styleToggle").setAttribute("aria-expanded",open);$("#dropCount").textContent=open?"Tap to close":"Tap to see all 13"};
-$("#styleToggle").onclick=()=>setStyles(!$("#styleDrop").classList.contains("open"));
-$("#peekStrip").onclick=()=>setStyles(true);
+$("#peekStrip").innerHTML=SIGNATURE.map((d,i)=>`<span role="button" tabindex="0" data-i="${i}" class="${d.spicy?"hot":""}">${d.spicy?"🔥 ":""}${d.name}</span>`).join("");
+let selDog=-1;
+function setStyles(mode,i){
+  const dd=$("#styleDrop"),open=mode!=="closed";
+  dd.classList.toggle("open",open);dd.classList.toggle("all",mode==="all");dd.classList.toggle("one",mode==="one");
+  $("#styleToggle").setAttribute("aria-expanded",open);
+  $("#dropCount").textContent=open?"Tap to close":"Tap to see all 13";
+  selDog=mode==="one"?i:-1;
+  document.querySelectorAll("#peekStrip span").forEach(s=>s.classList.toggle("sel",+s.dataset.i===selDog));
+  if(mode==="one"){
+    const d=SIGNATURE[i];
+    $("#sigOne").innerHTML=`<div class="feature"><div class="sig-photo">${d.spicy?'<span class="spicy">🔥 SPICY</span>':""}<span class="ptag">$${d.price}</span><img src="${d.img}" alt="${esc(d.name)}"></div>
+      <div class="sig-body"><h4>${d.name}</h4><p>Comes with:</p><div class="tops-list">${d.tops.map(t=>`<span>${t}</span>`).join("")}</div>
+      <div class="sig-foot">${addBtn(d,"Customize and add")}</div></div></div>`;
+  }
+}
+$("#styleToggle").onclick=()=>setStyles($("#styleDrop").classList.contains("open")?"closed":"all");
+const pickName=e=>{const s=e.target.closest("#peekStrip span");if(!s)return;const i=+s.dataset.i;setStyles(selDog===i?"closed":"one",i)};
+$("#peekStrip").addEventListener("click",pickName);
+$("#peekStrip").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pickName(e)}});
 $("#tchips").innerHTML=TOPPINGS.map(t=>`<span>${t}</span>`).join("");
 $("#comboList").innerHTML=COMBOS.map(c=>`<div class="combo"><div class="n">${c.n}</div>
   <div><h4>${c.desc}</h4><small>${c.sub}</small>${addBtn(c,"Customize")}</div><span class="ptag red">$${c.price}</span></div>`).join("");
@@ -748,7 +778,7 @@ function czCalc(){
 function czUpdate(){const{unit}=czCalc();$("#czAdd").textContent="Add to order · "+money(unit*cz.qty);$("#czExtra").textContent=cz.extraMsg||""}
 function closeCz(){$("#czOverlay").classList.remove("open")}
 if(ORDER){
-  document.querySelectorAll(".add").forEach(b=>b.onclick=()=>{const it=REG[b.dataset.k];canCustomize(it)?openCz(it):addToCart(it.name,it.price,"",1)});
+  document.addEventListener("click",e=>{const b=e.target.closest(".add");if(!b)return;const it=REG[b.dataset.k];canCustomize(it)?openCz(it):addToCart(it.name,it.price,"",1)});
   $("#byoAdd").onclick=()=>openCz(BYO);
   $("#czClose").onclick=closeCz;
   $("#czOverlay").onclick=e=>{if(e.target.id==="czOverlay")closeCz()};
