@@ -256,6 +256,9 @@ footer small{opacity:.8}
 .line{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:2px dashed #e3cc9c}
 .line small{display:block;color:var(--muted);font-weight:600}
 .total{display:flex;justify-content:space-between;font-family:Bangers;font-size:2rem;letter-spacing:1px;margin:14px 0}
+.order-num{text-align:center;background:var(--yellow);border:3px solid var(--ink);border-radius:18px;padding:12px;margin-bottom:14px;box-shadow:4px 4px 0 var(--red)}
+.order-num b{display:block;font-family:Bangers,Impact,sans-serif;font-size:3.4rem;letter-spacing:2px;line-height:1;color:var(--red);margin:4px 0}
+.order-num small{font-weight:800;color:var(--muted)}
 .order-text{white-space:pre-wrap;background:#fff;border:2px solid #e3cc9c;border-radius:12px;padding:12px;font-size:.9rem}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:800;z-index:70;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
@@ -550,6 +553,7 @@ const SIDES = [
     <div class="total"><span>Total</span><span id="cartTotal">$0.00</span></div>
     <div id="checkout">
       <div class="field"><label for="oName">Name for the order</label><input id="oName" placeholder="Jordan"></div>
+      <div class="field"><label for="oPhone">Your phone <span style="font-weight:700;color:var(--muted)">(we'll text you when it's ready)</span></label><input id="oPhone" type="tel" inputmode="tel" placeholder="(812) 555-0142"></div>
       <div class="field"><label for="oTime">Pickup time</label><input id="oTime" placeholder="12:15 PM"></div>
       <div class="field"><label for="oNote">Notes</label><input id="oNote" placeholder="Extra napkins please"></div>
       <div class="err" id="oErr"></div>
@@ -557,7 +561,8 @@ const SIDES = [
       <p style="font-size:.88rem;color:var(--muted);text-align:center;margin:10px 0 0;font-weight:700">Pay at the window when you pick up.</p>
     </div>
     <div id="sent" style="display:none">
-      <p style="font-weight:900">Almost done. Text this order to <span id="sentPhone"></span>:</p>
+      <div class="order-num">Your order number<b id="orderNum"></b><small>Show this at the window</small></div>
+      <p style="font-weight:900">Last step: text this order to <span id="sentPhone"></span>. We'll text you back when it's ready.</p>
       <div class="order-text" id="orderText"></div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
         <a class="btn btn-red" id="smsLink">Open text message</a>
@@ -733,17 +738,21 @@ function renderCart(){
 $("#cartFab").onclick=()=>{$("#overlay").classList.add("open");$("#sent").style.display="none";$("#checkout").style.display=cart.length?"block":"none"};
 $("#closeCart").onclick=()=>$("#overlay").classList.remove("open");
 $("#overlay").onclick=e=>{if(e.target.id==="overlay")$("#overlay").classList.remove("open")};
-["oName","oTime"].forEach(id=>$("#"+id).addEventListener("input",()=>$("#oErr").textContent=""));
+["oName","oPhone","oTime"].forEach(id=>$("#"+id).addEventListener("input",()=>$("#oErr").textContent=""));
 $("#sendOrder").onclick=()=>{
   const name=$("#oName").value.trim(),time=$("#oTime").value.trim();
   if(!name){$("#oErr").textContent="Enter a name for the order";return}
+  const phone=$("#oPhone").value.trim(),digits=phone.replace(/\D/g,"").replace(/^1(?=\d{10}$)/,"");
+  if(digits.length!==10){$("#oErr").textContent="Enter a 10-digit phone number so we can text you when it's ready";return}
   if(!time){$("#oErr").textContent="Enter a pickup time";return}
+  const prettyPhone=`(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+  const num=String(Math.floor(Date.now()/1000)%9000+1000);
   const total=cart.reduce((a,c)=>a+c.qty*c.price,0);
-  let txt=`HOT DIGGITY DOG ORDER\nName: ${name}\nPickup: ${time}\n\n`;
+  let txt=`HOT DIGGITY DOG ORDER #${num}\nName: ${name}\nText when ready: ${prettyPhone}\nPickup: ${time}\n\n`;
   cart.forEach(c=>{txt+=`${c.qty}x ${c.name}${c.detail?" ("+c.detail+")":""} - ${money(c.qty*c.price)}\n`});
   if($("#oNote").value.trim())txt+=`\nNotes: ${$("#oNote").value.trim()}\n`;
   txt+=`\nTotal: ${money(total)} (pay at pickup)`;
-  $("#orderText").textContent=txt;$("#sentPhone").textContent=SITE.phone;
+  $("#orderText").textContent=txt;$("#sentPhone").textContent=SITE.phone;$("#orderNum").textContent="#"+num;
   $("#smsLink").href=`sms:${SITE.phoneDigits}?&body=${encodeURIComponent(txt)}`;
   $("#checkout").style.display="none";$("#sent").style.display="block";
 };
