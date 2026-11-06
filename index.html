@@ -96,7 +96,8 @@ section{padding:70px 0}
 .special{padding-top:90px}
 .special-card{position:relative;display:grid;grid-template-columns:1.1fr 1fr;background:var(--red);color:#fff;border-radius:28px;overflow:visible;box-shadow:0 10px 0 var(--red-dark)}
 .special-photo{background:var(--paper);border-radius:28px 0 0 28px;display:grid;place-items:center;padding:22px;position:relative}
-.special-photo img{width:100%;max-height:300px;object-fit:contain;transform:rotate(-4deg);filter:drop-shadow(0 12px 10px rgba(0,0,0,.25))}
+.special-photo img{width:min(280px,80%);aspect-ratio:1;object-fit:cover;border-radius:50%;border:8px solid #fff;outline:5px solid var(--red);transform:rotate(-4deg);box-shadow:0 14px 24px rgba(0,0,0,.25)}
+.special-photo{background-image:radial-gradient(rgba(214,40,40,.25) 2px,transparent 2.4px);background-size:14px 14px}
 .special-body{padding:34px 34px 34px 30px}
 .special .tag{display:inline-block;background:var(--yellow);color:var(--red-dark);font-weight:900;padding:6px 14px;border-radius:999px;font-size:.85rem;letter-spacing:.5px}
 .special h2{font-size:clamp(2.8rem,6vw,4.2rem);margin:12px 0 8px;color:#fff;text-shadow:3px 3px 0 var(--red-dark)}
@@ -110,7 +111,7 @@ section{padding:70px 0}
 .jump{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:-8px 0 36px}
 .jump a{border:3px solid var(--ink);background:#fff;font-weight:900;padding:7px 16px;border-radius:999px;text-decoration:none;box-shadow:3px 3px 0 var(--ink)}
 .jump a:hover{background:var(--yellow)}
-.step{display:flex;align-items:center;gap:14px;margin:0 0 18px}
+.step{display:flex;align-items:center;gap:14px;margin:0 0 18px;flex-wrap:wrap}
 .step .num{font-family:Bangers;font-size:1.3rem;letter-spacing:1px;background:var(--ink);color:var(--yellow);padding:6px 14px;border-radius:10px;transform:rotate(-3deg)}
 .step h3{font-family:Bangers;font-size:2.4rem;letter-spacing:1.2px;font-weight:400}
 .dog-types{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:48px}
@@ -128,7 +129,7 @@ section{padding:70px 0}
 .sig-body{padding:14px 16px 16px;display:flex;flex-direction:column;gap:6px;flex:1}
 .sig-body h4{font-size:1.35rem;color:var(--red)}
 .sig-body p{margin:0;color:var(--muted);font-size:.93rem;font-weight:600;flex:1}
-.sig-foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.sig-foot{display:flex;justify-content:flex-end;align-items:center;margin-top:6px}
 .sig-foot .p{font-family:Bangers;font-size:1.7rem;letter-spacing:1px}
 .byo{margin-top:26px;display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center;background:var(--green);color:#fff;border-radius:26px;padding:28px;box-shadow:0 8px 0 var(--green-dark)}
 .byo img{width:150px;transform:scaleX(-1) rotate(-6deg)}
@@ -147,7 +148,7 @@ section{padding:70px 0}
 .combo .n{width:44px;height:44px;border-radius:50%;border:3px solid var(--red);display:grid;place-items:center;font-family:Bangers;font-size:1.5rem;color:var(--red)}
 .combo h4{font-size:1.1rem}
 .combo small{display:block;color:var(--muted);font-weight:700;font-size:.85rem}
-.combo .p{font-family:Bangers;font-size:2.2rem;color:var(--red);letter-spacing:1px;text-align:right}
+.combo .ptag{font-size:2rem}
 .combo .btn{margin-top:6px}
 .row-item{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:12px 0;border-bottom:3px dotted #e6cfa2}
 .row-item:last-child{border-bottom:0}
@@ -155,7 +156,7 @@ section{padding:70px 0}
 .thumb.blank{background:var(--yellow);display:grid;place-items:center;font-size:1.8rem}
 .row-item h4{font-size:1.15rem}
 .row-item p{margin:2px 0 0;color:var(--muted);font-weight:600;font-size:.9rem}
-.row-item .p{font-family:Bangers;font-size:1.8rem;letter-spacing:1px;text-align:right}
+
 .row-item .btn{margin-top:6px}
 .sides{margin-top:22px;background:var(--yellow);border:3px solid var(--red);border-radius:20px;padding:18px 22px;position:relative}
 .sides .board-title{font-size:2.1rem;color:var(--red)}
@@ -163,6 +164,22 @@ section{padding:70px 0}
 .side-line .dots{flex:1;border-bottom:3px dotted rgba(0,0,0,.35);transform:translateY(-4px)}
 .side-line .add-s{border:0;background:var(--red);color:#fff;width:30px;height:30px;border-radius:50%;font-weight:900;font-size:1.1rem;cursor:pointer;flex:none}
 
+/* tabs + price tags */
+.menu-title{color:var(--red)!important}
+.tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin:0 0 34px}
+.tab{border:2.5px solid var(--red);background:#fff;color:var(--red);font:900 1rem Nunito,sans-serif;padding:10px 20px;border-radius:999px;cursor:pointer;transition:transform .1s}
+.tab:hover{transform:translateY(-2px)}
+.tab.active{background:var(--red);color:#fff;box-shadow:0 4px 0 var(--red-dark)}
+.panel{display:none;animation:fadeUp .3s ease}.panel.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.board-sub{margin:0 0 6px;font-weight:700;color:var(--muted)}
+.pill-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pill-row span{background:var(--yellow);border-radius:999px;padding:6px 14px;font-weight:800;font-size:.88rem}
+.ptag{display:inline-block;font-family:Bangers,Impact,sans-serif;font-size:1.75rem;letter-spacing:1px;line-height:1;background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:12px;padding:6px 12px 4px;box-shadow:3px 3px 0 var(--red);transform:rotate(-3deg);white-space:nowrap}
+.ptag.red{background:var(--red);color:#fff;box-shadow:3px 3px 0 var(--ink)}
+.ptag.sm{font-size:1.3rem;padding:4px 9px 2px;border-width:2.5px;box-shadow:2px 2px 0 var(--red)}
+.ptag.big{font-size:1.5rem;margin-left:auto}
+.sig-photo .ptag{position:absolute;top:10px;right:10px;z-index:2}
 /* gallery */
 .gallery{background:var(--ink);color:#fff;position:relative;overflow:hidden}
 .gallery .section-head h2{color:var(--yellow)}
@@ -262,8 +279,8 @@ const SITE = {
   // ITEM OF THE MONTH: "ref" must match a menu item name exactly
   itemOfMonth: {
     month: "November",
-    ref: "Firecracker",
-    blurb: "Our hottest seller right now. Jalapeños and gooey cheese sauce, finished with a big crunch of crushed Grippos. Fair warning: it bites back."
+    ref: "Pork Parfait",
+    blurb: "Comfort food in a cup. Creamy mashed potatoes layered with BBQ pulled pork, sweet corn, shredded cheese, and a BBQ drizzle on top."
   },
 
   // WHERE WE'LL BE: edit weekly
@@ -283,6 +300,7 @@ const TOPPINGS = ["Ketchup","Mustard","Relish","Pickles","Jalapeños","Chili sau
 const SIDE = {label:"Side", choices:[["Fries",0],["Chips",0],["Chili fries",2]]};
 const DRINK = {label:"Drink", choices:[["Soda",0],["Water",0]]};
 const PROTEIN = {label:"Choose your meat", choices:[["BBQ pulled pork",0],["BBQ chicken",0]]};
+const SAUCES = ["Honey mustard","Barbecue","Ketchup","Ranch","Hot sauce"];
 
 const SIGNATURE = [
   {name:"Firecracker", spicy:true, img:"img/firecracker.jpg", tops:["Jalapeños","Cheese sauce","Crushed Grippos"]},
@@ -306,7 +324,19 @@ const COMBOS = [
   {n:1, name:"Any Hot Dog Combo", price:10, kind:"dog", pick:DOGS, styles:true, groups:[SIDE,DRINK], desc:"Any hot dog + fries or chips with a drink", sub:"Sub chili fries for +$2", img:"img/lineup.jpg"},
   {n:2, name:"Crispy Chicken Sandwich Combo", price:11, tops:["Mayo","Sweet and spicy slaw","Onion"], groups:[SIDE,DRINK], desc:"Crispy chicken sandwich + fries or chips with a drink", sub:"Topped with mayo, sweet and spicy slaw, and onion"},
   {n:3, name:"BBQ Sandwich Combo", price:11, tops:["Pickles","Onion"], groups:[PROTEIN,SIDE,DRINK], desc:"BBQ pulled pork or chicken + fries or chips with a drink", sub:"Topped with pickles and onion"},
-  {n:4, name:"Mozzarella Sticks Combo", price:12, groups:[{label:"Dipping sauce", choices:[["Marinara",0],["Ranch",0]]},DRINK], desc:"Mozzarella sticks + fries with a drink", sub:"Choice of marinara or ranch"}
+  {n:4, name:"Mozzarella Sticks Combo", price:12, groups:[{label:"Dipping sauce", choices:[["Marinara",0],["Ranch",0]]},DRINK], desc:"Mozzarella sticks + fries with a drink", sub:"Choice of marinara or ranch"},
+  {n:5, name:"Any Dog + Lemon Shake-Up", price:12, kind:"dog", pick:DOGS, styles:true, desc:"Any hot dog + a fresh lemon shake-up", sub:"Fresh lemons, shaken to order"}
+];
+
+const CHICKEN = [
+  {name:"Chicken Drumsticks (3 pc)", price:7, img:"img/wings.jpg", sauces:0, meal:true, desc:"Three crispy, seasoned drumsticks"},
+  {name:"Chicken Drumsticks (5 pc)", price:9, img:"img/wings.jpg", sauces:0, meal:true, desc:"Five crispy, seasoned drumsticks"},
+  {name:"Chicken Tenders (3 pc)", price:7, sauces:2, meal:true, desc:"Comes with 2 sauces", icon:"🍗"},
+  {name:"Chicken Tenders (5 pc)", price:9, sauces:3, meal:true, desc:"Comes with 3 sauces", icon:"🍗"},
+  {name:"BBQ Pulled Pork or Chicken Sandwich", price:8, groups:[PROTEIN], tops:["Pickles","Diced onions"], meal:true, desc:"BBQ pulled pork or chicken topped with pickles and diced onions", icon:"🥪"},
+  {name:"Crispy Chicken Sandwich", price:8, tops:["Tomato","Sweet and spicy slaw"], meal:true, desc:"Crispy chicken with sliced tomato and sweet and spicy slaw", icon:"🍔"},
+  {name:"Fried Tilapia Sandwich", price:8, tops:["Lettuce","Tartar sauce","Hot sauce"], meal:true, desc:"Includes lettuce, tartar sauce, and hot sauce packets", icon:"🐟"},
+  {name:"Fried Tilapia (2 pc)", price:10, tops:["Tartar sauce","Hot sauce"], meal:true, desc:"Two pieces with tartar sauce and hot sauce packets", icon:"🐟"}
 ];
 
 const MORE = [
@@ -319,11 +349,14 @@ const MORE = [
 
 const SIDES = [
   {name:"Fries", price:4},
+  {name:"Chips", price:2},
   {name:"Coleslaw", price:2},
   {name:"Mozzarella Sticks (6 pc)", price:7, groups:[{label:"Dipping sauce", choices:[["Marinara",0],["Ranch",0]]}]},
   {name:"Side of Cheese Sauce", price:2},
   {name:"Side of Chili Sauce", price:2},
-  {name:"Drink", price:2, groups:[DRINK]}
+  {name:"Drink", price:2, groups:[DRINK]},
+  {name:"Lemon Shake-Up (24 oz)", price:7},
+  {name:"Lemon Shake-Up Refill", price:4}
 ];
 </script>
 
@@ -348,7 +381,7 @@ const SIDES = [
       <span class="kicker">KASANTÚ · SELECT WEST AFRICAN CUISINE</span>
       <h1>Hot Diggity Dog!</h1>
       <div class="tag">just doggin' around...</div>
-      <p class="lead">Thirteen signature dogs, build-your-own with 16 toppings, loaded nachos, and the one and only Pork Parfait, served hot from the big yellow truck.</p>
+      <p class="lead">Thirteen signature dogs, build-your-own with 16 toppings, crispy chicken, loaded nachos, lemon shake-ups, and the one and only Pork Parfait, served hot from the big yellow truck.</p>
       <div class="hero-actions">
         <a class="btn btn-red" href="#menu">See the menu</a>
         <a class="btn btn-light" href="#find">Where we'll be</a>
@@ -379,7 +412,7 @@ const SIDES = [
         <span class="tag" id="spTag"></span>
         <h2 id="spName"></h2>
         <p id="spDesc"></p>
-        <span class="price" id="spPrice"></span>
+        <span class="ptag" id="spPrice" style="font-size:2.6rem;margin-right:16px;vertical-align:middle"></span>
         <button class="btn btn-light order-only" id="spAdd">Customize and add</button>
       </div>
     </div>
@@ -389,41 +422,56 @@ const SIDES = [
 <section class="menu-sec" id="menu">
   <div class="wrap">
     <div class="section-head">
-      <h2>The <span class="brush" style="color:#fff">&nbsp;Menu&nbsp;</span></h2>
-      <p id="menuSub">Every dog is $7. Pick your dog, pick your style, and make it yours.</p>
+      <h2 class="menu-title">The Menu</h2>
+      <p id="menuSub">Tap a section, then add items to order ahead for pickup.</p>
     </div>
-    <div class="jump">
-      <a href="#m-dogs">🌭 Hot dogs</a><a href="#m-combos">🥤 Combos</a><a href="#m-more">🧀 Nachos and more</a><a href="#m-sides">🍟 Sides</a>
-    </div>
-
-    <div id="m-dogs" class="step"><span class="num">STEP 1</span><h3>Choose your dog</h3></div>
-    <div class="dog-types" id="dogTypes"></div>
-
-    <div class="step"><span class="num">STEP 2</span><h3>Choose your style</h3></div>
-    <div class="sig-grid" id="sigGrid"></div>
-
-    <div class="byo">
-      <img src="img/mascot.png" alt="">
-      <div>
-        <h3>Or build your own!</h3>
-        <p>Up to 5 toppings free. Each additional topping is 50¢.</p>
-        <div class="tchips" id="tchips"></div>
-        <button class="btn btn-red order-only" id="byoAdd">Build my dog</button>
-      </div>
+    <div class="tabs" role="tablist">
+      <button class="tab active" data-t="dogs" role="tab">Custom Dogs</button>
+      <button class="tab" data-t="chicken" role="tab">Chicken and Sandwiches</button>
+      <button class="tab" data-t="loaded" role="tab">Nachos and Fries</button>
+      <button class="tab" data-t="combos" role="tab">Combos and Drinks</button>
     </div>
 
-    <div class="two-col">
-      <div class="board" id="m-combos">
-        <div class="board-title">Combos</div>
-        <div id="comboList"></div>
-      </div>
-      <div>
-        <div class="board" id="m-more">
-          <div class="board-title">Nachos, Fries and More</div>
-          <div id="moreList"></div>
+    <div class="panel active" id="p-dogs">
+      <div class="step"><span class="num">STEP 1</span><h3>Choose your dog</h3><span class="ptag red big">ANY DOG $7</span></div>
+      <div class="dog-types" id="dogTypes"></div>
+      <div class="step"><span class="num">STEP 2</span><h3>Choose your style</h3></div>
+      <div class="sig-grid" id="sigGrid"></div>
+      <div class="byo">
+        <img src="img/mascot.png" alt="">
+        <div>
+          <h3>Or build your own!</h3>
+          <p>Up to 5 toppings free. Each additional topping is 50¢.</p>
+          <div class="tchips" id="tchips"></div>
+          <button class="btn btn-red order-only" id="byoAdd">Build my dog</button>
         </div>
-        <div class="sides" id="m-sides">
-          <div class="board-title">Sides</div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-chicken">
+      <div class="board">
+        <div class="board-title">Chicken and Sandwiches</div>
+        <p class="board-sub">Make any of these a meal with fries and a drink for <b>+$4</b>.</p>
+        <div id="chickenList"></div>
+        <div class="pill-row"><span>Sauces: honey mustard, BBQ, ketchup, ranch, hot sauce</span><span>Extra sauce 50¢ each</span></div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-loaded">
+      <div class="board">
+        <div class="board-title">Nachos, Fries and More</div>
+        <div id="moreList"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-combos">
+      <div class="two-col" style="margin-top:0">
+        <div class="board">
+          <div class="board-title">Combos</div>
+          <div id="comboList"></div>
+        </div>
+        <div class="sides">
+          <div class="board-title">Sides and Drinks</div>
           <div id="sideList"></div>
         </div>
       </div>
@@ -541,7 +589,7 @@ const REG={}; let regN=0;
 const reg=it=>{const k="i"+(regN++);REG[k]=it;return k};
 let cart=[];
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),1600)}
-const canCustomize=it=>!!(it.pick||it.tops||it.groups||it.kind);
+const canCustomize=it=>!!(it.pick||it.tops||it.groups||it.kind||it.meal||it.sauces!==undefined);
 const addBtn=(it,label)=>ORDER?`<button class="btn ${canCustomize(it)?"btn-light":"btn-red"} btn-sm add" data-k="${reg(it)}">${label||(canCustomize(it)?"Customize":"Add")}</button>`:"";
 
 /* contact + basics */
@@ -555,11 +603,11 @@ document.querySelectorAll("#links a").forEach(a=>a.addEventListener("click",()=>
 if(!ORDER)document.querySelectorAll(".order-link,.order-only").forEach(e=>e.remove());
 
 /* ticker */
-const words=["Custom dogs","Loaded nachos","Pork parfait","Veggie dogs","Chicago style","Firecracker","Combos from $10","Book us for events"];
+const words=["Custom dogs","Loaded nachos","Pork parfait","Lemon shake-ups","Chicken tenders","Veggie dogs","Fried tilapia","Combos from $10","Book us for events"];
 $("#ticker").innerHTML=[...words,...words].map(w=>`<span>${w}<i>★</i></span>`).join("");
 
 /* special */
-const ALL=[...SIGNATURE,...COMBOS,...MORE,...SIDES];
+const ALL=[...SIGNATURE,...COMBOS,...CHICKEN,...MORE,...SIDES];
 const sp=ALL.find(i=>i.name===SITE.itemOfMonth.ref)||SIGNATURE[0];
 $("#spTag").textContent=SITE.itemOfMonth.month.toUpperCase()+" ITEM OF THE MONTH";
 $("#spName").textContent=sp.name;
@@ -571,15 +619,21 @@ if(ORDER)$("#spAdd").onclick=()=>openCz(sp);
 /* menu render */
 $("#dogTypes").innerHTML=DOGS.map(d=>`<div class="dog-type"><h4>${d}</h4><small>${d==="Veggie Dog"?"plant-based option":"jumbo and juicy"}</small></div>`).join("")+`<div class="dog-type" style="display:grid;place-items:center;border:0;box-shadow:none;background:none"><div class="price-burst">$7</div></div>`;
 $("#sigGrid").innerHTML=SIGNATURE.map(d=>`<div class="sig">
-  <div class="sig-photo">${d.spicy?'<span class="spicy">🔥 SPICY</span>':""}<img src="${d.img}" alt="${esc(d.name)}" loading="lazy"></div>
+  <div class="sig-photo">${d.spicy?'<span class="spicy">🔥 SPICY</span>':""}<span class="ptag">$${d.price}</span><img src="${d.img}" alt="${esc(d.name)}" loading="lazy"></div>
   <div class="sig-body"><h4>${d.name}</h4><p>${d.desc}</p>
-  <div class="sig-foot"><span class="p">$${d.price}</span>${addBtn(d)}</div></div></div>`).join("");
+  <div class="sig-foot">${addBtn(d)}</div></div></div>`).join("");
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));
+  document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="p-"+b.dataset.t));
+});
 $("#tchips").innerHTML=TOPPINGS.map(t=>`<span>${t}</span>`).join("");
 $("#comboList").innerHTML=COMBOS.map(c=>`<div class="combo"><div class="n">${c.n}</div>
-  <div><h4>${c.desc}</h4><small>${c.sub}</small>${addBtn(c,"Customize")}</div><div class="p">$${c.price}</div></div>`).join("");
-$("#moreList").innerHTML=MORE.map(m=>`<div class="row-item">${m.img?`<img class="thumb" src="${m.img}" alt="" loading="lazy">`:`<div class="thumb blank">${m.icon||"🌭"}</div>`}
-  <div><h4>${m.name}</h4><p>${m.desc}</p>${addBtn(m)}</div><div class="p">$${m.price}</div></div>`).join("");
-$("#sideList").innerHTML=SIDES.map(s=>`<div class="side-line"><span>${s.name}</span><span class="dots"></span><span>$${s.price}</span>${ORDER?`<button class="add-s add" data-k="${reg(s)}" aria-label="Add ${esc(s.name)}">+</button>`:""}</div>`).join("");
+  <div><h4>${c.desc}</h4><small>${c.sub}</small>${addBtn(c,"Customize")}</div><span class="ptag red">$${c.price}</span></div>`).join("");
+const rows=list=>list.map(m=>`<div class="row-item">${m.img?`<img class="thumb" src="${m.img}" alt="" loading="lazy">`:`<div class="thumb blank">${m.icon||"🌭"}</div>`}
+  <div><h4>${m.name}</h4><p>${m.desc}</p>${addBtn(m)}</div><span class="ptag">$${m.price}</span></div>`).join("");
+$("#moreList").innerHTML=rows(MORE);
+$("#chickenList").innerHTML=rows(CHICKEN);
+$("#sideList").innerHTML=SIDES.map(s=>`<div class="side-line"><span>${s.name}</span><span class="dots"></span><span class="ptag sm">$${s.price}</span>${ORDER?`<button class="add-s add" data-k="${reg(s)}" aria-label="Add ${esc(s.name)}">+</button>`:""}</div>`).join("");
 
 /* customizer */
 let cz=null;
@@ -599,6 +653,8 @@ function openCz(it){
   if(it.styles)h+=`<div id="czStyleGroups"></div>`;
   if(it.kind==="dog")h+=`<div id="czTops"></div>`;
   else if(it.tops)h+=group("What's on it <small>tap to hold</small>",it.tops.map(t=>chip("checkbox","czHold",t,true,"hold")).join(""));
+  if(it.sauces!==undefined)h+=group(`Sauces <small>${it.sauces?it.sauces+" included, then ":""}50¢ each</small>`,SAUCES.map((s,i)=>chip("checkbox","czSauce",s,i<it.sauces)).join(""));
+  if(it.meal)h+=group("Make it a meal",chip("checkbox","czMeal","Add fries and a drink (+$4)",false));
   h+=`<div class="cz-group"><h4>Special instructions</h4><input id="czNote" class="cz-note" placeholder="Well done, sauce on the side"></div>`;
   $("#czBody").innerHTML=h;
   if(it.kind==="dog")drawTops(it.styles?null:it);
@@ -638,6 +694,8 @@ function czCalc(){
     if(it.kind==="dog"&&!it.styles)return; // dog's own groups handled above
     const v=vals("czG"+gi)[0];if(!v)return;const c=g.choices.find(x=>x[0]===v);p+=c[1];d.push(g.label.toLowerCase().startsWith("choose")?v:`${g.label.toLowerCase()}: ${v}`);
   });
+  if(it.sauces!==undefined){const s=vals("czSauce");p+=Math.max(0,s.length-it.sauces)*.5;if(s.length)d.push("sauces: "+s.join(", "))}
+  if(vals("czMeal").length){p+=4;d.push("meal w/ fries + drink")}
   if(it.tops&&it.kind!=="dog")it.tops.filter(t=>!vals("czHold").includes(t)).forEach(t=>d.push("no "+t.toLowerCase()));
   const note=($("#czNote")||{}).value;if(note&&note.trim())d.push('"'+note.trim()+'"');
   return{unit:p,detail:d.join(" · ")};

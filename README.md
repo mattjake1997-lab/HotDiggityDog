@@ -21,6 +21,6 @@ Open `index.html` on GitHub, click the pencil icon, and change the **EASY-EDIT S
 - `phone`, `phoneDigits`, `email`
 - `ordering.enabled`: set to `false` to hide the order buttons and cart
 
-Menu items and prices are in the lists right below it: `SIGNATURE` (hot dog styles), `COMBOS`, `MORE` (nachos, fries, parfait) and `SIDES`.
+Menu items and prices are in the lists right below it: `SIGNATURE` (hot dog styles), `CHICKEN` (chicken and sandwiches), `COMBOS`, `MORE` (nachos, fries, parfait) and `SIDES`.
 The item of the month uses `ref`, which must match a menu item name exactly (for example "Firecracker").
 Click **Commit changes** and the live site updates in about a minute.
