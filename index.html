@@ -62,9 +62,14 @@ header{position:sticky;top:0;z-index:40;background:var(--yellow);border-bottom:4
 .hero .tag{font-family:Caveat,cursive;font-size:2.3rem;color:var(--green-dark);margin:2px 0 12px;transform:rotate(-2deg)}
 .hero p.lead{font-size:1.15rem;font-weight:600;max-width:470px;margin:0 0 22px}
 .hero-actions{display:flex;flex-wrap:wrap;gap:12px}
-.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
-.stat{background:rgba(255,255,255,.75);border:2px solid #fff;border-radius:14px;padding:8px 14px;font-weight:800;font-size:.9rem}
-.stat b{font-family:Bangers;font-size:1.5rem;color:var(--red);letter-spacing:1px;margin-right:4px;font-weight:400}
+.stats{display:flex;flex-wrap:wrap;gap:16px 14px;margin-top:30px;padding-left:4px}
+.stat{background:#fff;border:3px solid var(--ink);border-radius:18px;padding:8px 16px 6px;box-shadow:4px 4px 0 var(--ink);font-family:Bangers,Impact,sans-serif;font-size:1.35rem;letter-spacing:1.2px;line-height:1;text-transform:uppercase;display:flex;align-items:baseline;gap:6px;transition:transform .15s}
+.stat:nth-child(1){transform:rotate(-4deg)}
+.stat:nth-child(2){transform:rotate(3deg) translateY(4px)}
+.stat:nth-child(3){transform:rotate(-2deg)}
+.stat:hover{transform:rotate(0) scale(1.06)}
+.stat b{font-weight:400;font-size:2rem;color:var(--red)}
+.stat.green b{color:var(--green)}
 .hero-art{position:relative;min-height:520px}
 .polaroid{position:absolute;background:#fff;padding:10px 10px 34px;box-shadow:0 12px 26px rgba(0,0,0,.22);border-radius:4px}
 .polaroid img{width:100%;height:100%;object-fit:cover}
@@ -392,7 +397,7 @@ const SIDES = [
       <div class="stats">
         <div class="stat"><b>13</b>signature dogs</div>
         <div class="stat"><b>16</b>toppings</div>
-        <div class="stat"><b>🌱</b>veggie dog available</div>
+        <div class="stat green"><b>+</b>veggie dogs too!</div>
       </div>
     </div>
     <div class="hero-art">
