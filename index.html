@@ -195,12 +195,13 @@ section{padding:70px 0}
 .drop-count{background:#fff;border:2.5px solid var(--ink);border-radius:999px;padding:4px 12px;font-weight:900;font-size:.85rem}
 .chev{margin-left:auto;width:46px;height:46px;border-radius:50%;background:var(--red);color:#fff;display:grid;place-items:center;font-size:1.5rem;border:3px solid var(--ink);box-shadow:2px 2px 0 var(--ink);transition:transform .3s}
 .dropdown.open .chev{transform:rotate(180deg)}
-.peek-strip{display:flex;gap:10px;padding:14px 20px;overflow-x:auto;cursor:pointer;scrollbar-width:thin}
-.peek-strip img{width:76px;height:76px;flex:none;border-radius:50%;object-fit:cover;border:3px solid var(--ink);background:#FDF1DC;transition:transform .15s}
-.peek-strip img:nth-child(odd){transform:rotate(-4deg)}
-.peek-strip img:nth-child(even){transform:rotate(4deg)}
-.peek-strip img:hover{transform:scale(1.12)}
-.peek-strip .more{flex:none;align-self:center;font-weight:900;color:var(--red);white-space:nowrap;padding-left:6px}
+.peek-strip{display:flex;flex-wrap:wrap;gap:12px 10px;padding:18px 20px 20px;cursor:pointer}
+.peek-strip span{background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:6px 12px 4px;box-shadow:3px 3px 0 var(--ink);font-family:Bangers,Impact,sans-serif;font-size:1.15rem;letter-spacing:1px;line-height:1;text-transform:uppercase;white-space:nowrap;transition:transform .15s,background .15s}
+.peek-strip span:nth-child(3n+1){transform:rotate(-3deg)}
+.peek-strip span:nth-child(3n+2){transform:rotate(2deg)}
+.peek-strip span:nth-child(3n){transform:rotate(-1deg)}
+.peek-strip span.hot{color:var(--red)}
+.peek-strip span:hover{transform:rotate(0) scale(1.08);background:var(--yellow)}
 .dropdown.open .peek-strip{display:none}
 .drop-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s ease}
 .dropdown.open .drop-body{grid-template-rows:1fr}
@@ -666,7 +667,7 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));
   document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="p-"+b.dataset.t));
 });
-$("#peekStrip").innerHTML=SIGNATURE.map(d=>`<img src="${d.img}" alt="" title="${esc(d.name)}" loading="lazy">`).join("");
+$("#peekStrip").innerHTML=SIGNATURE.map(d=>`<span class="${d.spicy?"hot":""}">${d.spicy?"🔥 ":""}${d.name}</span>`).join("");
 const setStyles=open=>{$("#styleDrop").classList.toggle("open",open);$("#styleToggle").setAttribute("aria-expanded",open);$("#dropCount").textContent=open?"Tap to close":"Tap to see all 13"};
 $("#styleToggle").onclick=()=>setStyles(!$("#styleDrop").classList.contains("open"));
 $("#peekStrip").onclick=()=>setStyles(true);
