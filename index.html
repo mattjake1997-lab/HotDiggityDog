@@ -449,8 +449,6 @@ const CHICKEN = [
   {name:"Chicken Tenders (5 pc)", price:9, sauces:3, meal:true, desc:"Comes with 3 sauces", icon:"🍗"},
   {name:"BBQ Pulled Pork or Chicken Sandwich", price:8, groups:[PROTEIN], tops:["Pickles","Diced onions"], meal:true, desc:"BBQ pulled pork or chicken topped with pickles and diced onions", icon:"🥪"},
   {name:"Crispy Chicken Sandwich", price:8, img:"img/crispy-chicken.jpg", tops:["Tomato","Sweet and spicy slaw"], meal:true, desc:"Crispy chicken with sliced tomato and sweet and spicy slaw"},
-  {name:"Fried Tilapia Sandwich", price:8, tops:["Lettuce","Tartar sauce","Hot sauce"], meal:true, desc:"Includes lettuce, tartar sauce, and hot sauce packets", icon:"🐟"},
-  {name:"Fried Tilapia (2 pc)", price:10, tops:["Tartar sauce","Hot sauce"], meal:true, desc:"Two pieces with tartar sauce and hot sauce packets", icon:"🐟"},
   {name:"Corn Dog", price:7, desc:"Golden, crispy, and hand-held", icon:"🌭"},
   {name:"Pork Parfait", price:9, img:"img/parfait.jpg", tops:["Sweet corn","Shredded cheese","BBQ drizzle"], desc:"Mashed potatoes layered with BBQ pulled pork, sweet corn, shredded cheese, and BBQ drizzle"}
 ];
@@ -752,7 +750,7 @@ if(SITE.ordering.enabled&&SQUARE){
 }else if(!ORDER)document.querySelectorAll(".order-link,.order-only").forEach(e=>e.remove());
 
 /* ticker */
-const words=["Custom dogs","Corn dogs","Loaded nachos","Pork parfait","Lemon shake-ups","Chicken tenders","Veggie dogs","Fried tilapia","Combos from $10","Book us for events"];
+const words=["Custom dogs","Corn dogs","Loaded nachos","Pork parfait","Lemon shake-ups","Chicken tenders","Veggie dogs","Combos from $10","Book us for events"];
 $("#ticker").innerHTML=[...words,...words].map(w=>`<span>${w}<i>★</i></span>`).join("");
 
 
