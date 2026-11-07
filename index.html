@@ -404,7 +404,9 @@ const SITE = {
   //   Leave it "" to use the built-in text-message order cart.
   // sheetUrl: paste the Google Apps Script "Web app" URL here so orders go
   //   straight into the Google Sheet. Leave it "" to use text-message ordering.
-  ordering: { enabled: true, squareUrl: "", sheetUrl: "https://script.google.com/macros/s/AKfycbwQgHy--U_sE4cT_2tkZq0UlioW_K53bwLIiJ4a3D6LiOIEG_656j45w1jyYwGn2DFb/exec" }
+  // payUrl: the Cloudflare "pay helper" URL. When filled in, checkout offers
+  //   "Pay now" (Square card checkout) as well as "Pay at the window".
+  ordering: { enabled: true, squareUrl: "", payUrl: "", sheetUrl: "https://script.google.com/macros/s/AKfycbwQgHy--U_sE4cT_2tkZq0UlioW_K53bwLIiJ4a3D6LiOIEG_656j45w1jyYwGn2DFb/exec" }
 };
 
 /* ------------------ MENU ------------------ */
@@ -442,7 +444,10 @@ const COMBOS = [
   {n:5, name:"Any Dog + Lemon Shake-Up", price:12, kind:"dog", pick:DOGS, styles:true, desc:"Any hot dog + a fresh lemon shake-up", sub:"Fresh lemons, shaken to order"}
 ];
 
+const WING_SAUCE = {label:"Sauce", choices:[["Red Hot",0],["Sweet n Spicy",0],["BBQ",0]]};
 const CHICKEN = [
+  {name:"Boneless Wings (6 pc)", price:7, icon:"🍗", groups:[WING_SAUCE], meal:true, desc:"Tossed in Red Hot, Sweet n Spicy, or BBQ"},
+  {name:"Bone-In Wings (5 pc)", price:10, img:"img/wings.jpg", groups:[WING_SAUCE], meal:true, desc:"Tossed in Red Hot, Sweet n Spicy, or BBQ"},
   {name:"Chicken Drumsticks (3 pc)", price:7, img:"img/wings.jpg", sauces:0, meal:true, desc:"Three crispy, seasoned drumsticks"},
   {name:"Chicken Drumsticks (5 pc)", price:9, img:"img/wings.jpg", sauces:0, meal:true, desc:"Five crispy, seasoned drumsticks"},
   {name:"Chicken Tenders (3 pc)", price:7, sauces:2, meal:true, desc:"Comes with 2 sauces", icon:"🍗"},
@@ -671,9 +676,16 @@ const SIDES = [
       <div class="field"><label for="oName">Name for the order</label><input id="oName" placeholder="Jordan"></div>
       <div class="field"><label for="oPhone">Your phone <span style="font-weight:700;color:var(--muted)">(we'll text you when it's ready)</span></label><input id="oPhone" type="tel" inputmode="tel" placeholder="(812) 555-0142"></div>
       <div class="field"><label for="oNote">Notes</label><input id="oNote" placeholder="Extra napkins please"></div>
+      <div class="field pay-choice" id="payChoice" style="display:none">
+        <label>How do you want to pay?</label>
+        <div class="chip-grid">
+          <label class="chip"><input type="radio" name="payWay" value="window" checked><span>💵 Pay at the window</span></label>
+          <label class="chip"><input type="radio" name="payWay" value="now"><span>💳 Pay now with card</span></label>
+        </div>
+      </div>
       <div class="err" id="oErr"></div>
       <button class="btn btn-red" id="sendOrder" style="width:100%;justify-content:center">Send order to the truck</button>
-      <p style="font-size:.88rem;color:var(--muted);text-align:center;margin:10px 0 0;font-weight:700">Pay at the window when you pick up.</p>
+      <p id="payNote" style="font-size:.88rem;color:var(--muted);text-align:center;margin:10px 0 0;font-weight:700">Pay at the window when you pick up.</p>
     </div>
     </div>
 
@@ -726,6 +738,7 @@ const money=n=>"$"+n.toFixed(2);
 const SQUARE=(SITE.ordering.squareUrl||"").trim();
 const ORDER=SITE.ordering.enabled&&!SQUARE; // built-in cart only when no Square link
 const SHEET=(SITE.ordering.sheetUrl||"").trim();
+const PAYURL=(SITE.ordering.payUrl||"").trim();
 let lastReceipt=null;try{lastReceipt=JSON.parse(localStorage.getItem("hddReceipt")||"null")}catch(e){}
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
 const REG={}; let regN=0;
@@ -927,10 +940,11 @@ function orderText(r){
 }
 function renderReceipt(r){
   $("#tNum").textContent="#"+r.num;
+  $("#tStamp").innerHTML=r.paid?"PAID<br>ONLINE":"PAY AT<br>WINDOW";
   const st=$("#tStatus");
   st.className="t-status "+(r.sent?"ok":"warn");
   st.textContent=r.sent?"✓ Sent to the truck":"Not sent yet. Text it to the truck below";
-  $("#tMeta").innerHTML=[["Name",r.name],["Phone",r.phone],["Placed",new Date(r.placed).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})],["Payment","At the window"]]
+  $("#tMeta").innerHTML=[["Name",r.name],["Phone",r.phone],["Placed",new Date(r.placed).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})],["Payment",r.paid?"Paid online":(r.payment==="Paying online"?"Card checkout started":"At the window")]]
     .map(([a,b])=>`<div><span>${a}</span><span>${esc(b)}</span></div>`).join("")+(r.notes?`<div><span>Notes</span><span>${esc(r.notes)}</span></div>`:"");
   $("#tItems").innerHTML=r.lines.map(c=>`<div class="t-item"><div>${c.qty}x ${esc(c.name)}${c.detail?`<small>${esc(c.detail)}</small>`:""}</div><div>${money(c.qty*c.price)}</div></div>`).join("");
   $("#tTotal").textContent=r.total;
@@ -942,29 +956,62 @@ function renderReceipt(r){
     $("#sent").style.display="block";
   }else $("#sent").style.display="none";
 }
+if(PAYURL){
+  $("#payChoice").style.display="block";
+  document.querySelectorAll('input[name=payWay]').forEach(x=>x.onchange=()=>{
+    const now=$('input[name=payWay]:checked').value==="now";
+    $("#sendOrder").textContent=now?"Continue to secure card payment":"Send order to the truck";
+    $("#payNote").textContent=now?"You'll pay on Square's secure checkout page, then come right back here.":"Pay at the window when you pick up.";
+  });
+}
 $("#sendOrder").onclick=async()=>{
   const name=$("#oName").value.trim(),notes=$("#oNote").value.trim();
   if(!name){$("#oErr").textContent="Enter a name for the order";return}
   const digits=$("#oPhone").value.replace(/\D/g,"").replace(/^1(?=\d{10}$)/,"");
   if(digits.length!==10){$("#oErr").textContent="Enter a 10-digit phone number so we can text you when it's ready";return}
+  const payNow=!!PAYURL&&(document.querySelector('input[name=payWay]:checked')||{}).value==="now";
   const total=cart.reduce((a,c)=>a+c.qty*c.price,0);
   const r={name,phone:`(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`,notes,
     items:cart.map(c=>`${c.qty}x ${c.name}${c.detail?" ("+c.detail+")":""} - ${money(c.qty*c.price)}`),
-    lines:cart.map(c=>({...c})),total:money(total),payment:"Pay at window",placed:new Date().toISOString(),sent:false,num:null};
-  const btn=$("#sendOrder");
+    lines:cart.map(c=>({...c})),total:money(total),payment:payNow?"Paying online":"Pay at window",
+    placed:new Date().toISOString(),sent:false,num:null,paid:false};
+  const btn=$("#sendOrder"),label=btn.textContent;
+  btn.textContent=payNow?"Opening secure checkout…":"Sending to the truck…";btn.style.opacity=".7";
   if(SHEET){
-    btn.textContent="Sending to the truck…";btn.style.opacity=".7";
     try{
       const res=await fetch(SHEET,{method:"POST",body:JSON.stringify({name:r.name,phone:r.phone,notes:r.notes,items:r.items,total:r.total,payment:r.payment})});
       const j=await res.json();if(j&&j.ok){r.num=j.num;r.sent=true}
     }catch(e){}
-    btn.textContent="Send order to the truck";btn.style.opacity="";
   }
   if(!r.num)r.num=String(Math.floor(Date.now()/1000)%9000+1000);
+  if(payNow){
+    try{
+      const res=await fetch(PAYURL,{method:"POST",headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({num:r.num,name:r.name,phone:r.phone,notes:r.notes,lines:r.lines.map(c=>({name:c.name,qty:c.qty,unit:c.price,detail:c.detail}))})});
+      const j=await res.json();
+      if(j&&j.ok&&j.url){
+        lastReceipt=r;try{localStorage.setItem("hddReceipt",JSON.stringify(r))}catch(e){}
+        location.href=j.url;return;
+      }
+      throw new Error(j&&j.error||"checkout failed");
+    }catch(e){
+      btn.textContent=label;btn.style.opacity="";
+      $("#oErr").textContent="Card checkout isn't working right now. Choose \"Pay at the window\" to send your order.";
+      return;
+    }
+  }
+  btn.textContent=label;btn.style.opacity="";
   lastReceipt=r;try{localStorage.setItem("hddReceipt",JSON.stringify(r))}catch(e){}
   cart=[];renderCart();
   renderReceipt(r);showView("receipt");
 };
+/* back from Square checkout: ?paid=ORDERNUMBER */
+(()=>{const m=location.search.match(/[?&]paid=([^&]+)/);if(!m||!lastReceipt)return;
+  if(String(lastReceipt.num)===decodeURIComponent(m[1])){
+    lastReceipt.paid=true;lastReceipt.payment="Paid online";try{localStorage.setItem("hddReceipt",JSON.stringify(lastReceipt))}catch(e){}
+    cart=[];renderCart();renderReceipt(lastReceipt);showView("receipt");$("#overlay").classList.add("open");
+    history.replaceState(null,"",location.pathname+location.hash);
+  }})();
 $("#copyOrder").onclick=async()=>{try{await navigator.clipboard.writeText($("#orderText").textContent);toast("Order copied")}catch(e){toast("Select the text to copy it")}};
 $("#doneBtn").onclick=closeOverlay;
 $("#newOrderBtn").onclick=()=>{closeOverlay();document.querySelector("#menu").scrollIntoView({behavior:"smooth"})};
