@@ -229,29 +229,26 @@ section{padding:70px 0}
 /* menu + Kasantú side column */
 .menu-sec{padding-top:56px}
 .menu-wrap{max-width:1360px}
-.menu-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start}
-.square-cta{display:flex;width:max-content;margin:-14px auto 26px;font-size:1.1rem}
-.kasantu{position:sticky;top:84px;background:var(--green);color:#fff;border:3px solid var(--ink);border-radius:24px;padding:20px;box-shadow:6px 6px 0 var(--orange);max-height:calc(100vh - 100px);overflow:auto}
-.k-head{display:flex;align-items:center;gap:12px}
-.k-head img{width:78px;height:78px;border-radius:50%;background:#fff;border:3px solid var(--ink);object-fit:cover;flex:none}
-.k-title{font-family:Bangers,Impact,sans-serif;font-size:2.4rem;letter-spacing:2px;color:var(--yellow);line-height:1;text-shadow:3px 3px 0 var(--ink)}
-.k-sub{font-family:Caveat,cursive;font-size:1.45rem;line-height:1.05;color:#ffe9c7}
-.k-intro{margin:14px 0 6px;font-weight:700;font-size:.95rem;color:#e3f3ec}
-.k-dish{background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:18px;margin-top:14px;overflow:hidden;box-shadow:4px 4px 0 var(--ink)}
-.k-dish img{width:100%;height:140px;object-fit:cover;border-bottom:3px solid var(--ink)}
-.k-dish .kb{padding:12px 14px}
-.k-dish .kt{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.k-dish h4{font-size:1.2rem;color:var(--green)}
-.k-dish p{margin:4px 0 8px;color:var(--muted);font-weight:600;font-size:.9rem}
-.k-soon{margin-top:14px;border:3px dashed rgba(255,255,255,.55);border-radius:18px;padding:18px 14px;text-align:center}
-.k-soon b{display:block;font-family:Bangers,Impact,sans-serif;font-size:1.5rem;letter-spacing:1.5px;color:var(--yellow)}
-.k-soon span{font-weight:700;font-size:.88rem;color:#d7efe5}
-@media(max-width:1100px){.menu-layout{grid-template-columns:minmax(0,1fr)}.kasantu{position:static;max-height:none}}
+.step1-row{display:grid;grid-template-columns:minmax(0,1fr) 210px;gap:18px;align-items:center;margin-bottom:28px}
+.step1-row .dog-types{margin-bottom:0;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.kasantu{background:var(--green);color:#fff;border:3px solid var(--ink);border-radius:20px;padding:14px 14px 16px;box-shadow:4px 4px 0 var(--orange);text-align:center;display:flex;flex-direction:column;align-items:center}
+.k-logo{width:64px;height:64px;border-radius:50%;background:#fff;border:3px solid var(--ink);object-fit:cover}
+.k-title{font-family:Bangers,Impact,sans-serif;font-size:1.9rem;letter-spacing:2px;color:var(--yellow);line-height:1;margin-top:6px;text-shadow:2px 2px 0 var(--ink)}
+.k-sub{font-family:Caveat,cursive;font-size:1.2rem;line-height:1;color:#ffe9c7;margin-bottom:8px}
+#kSlot{width:100%;flex:1;display:flex;flex-direction:column;justify-content:center}
+.k-dish{background:#fff;color:var(--ink);border:2.5px solid var(--ink);border-radius:14px;overflow:hidden}
+.k-dish img{width:100%;height:96px;object-fit:cover;border-bottom:2.5px solid var(--ink)}
+.k-dish .kb{padding:8px 10px 10px}
+.k-dish h4{font-size:1.05rem;color:var(--green);line-height:1.15}
+.k-dish p{margin:4px 0 6px;color:var(--muted);font-weight:600;font-size:.82rem;line-height:1.3}
+.k-dish .ptag.sm{margin:4px 0 6px}
+.k-soon{border-top:2px dashed rgba(255,255,255,.45);padding-top:8px;font-weight:800;font-size:.85rem;color:#d7efe5;line-height:1.35}
+.k-soon b{display:block;font-family:Bangers,Impact,sans-serif;font-weight:400;font-size:1.2rem;letter-spacing:1.2px;color:#fff}
+@media(max-width:760px){.step1-row{grid-template-columns:minmax(0,1fr)}.kasantu{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:4px 10px;text-align:left}.kasantu .k-title,.kasantu .k-sub{margin:0}#kSlot{flex-basis:100%;text-align:center}}
 button.dog-type{font:inherit;color:inherit;cursor:pointer;transition:transform .12s,background .12s}
 button.dog-type:hover{transform:translateY(-3px);background:#FFF6D6}
 button.dog-type.sel{background:var(--yellow);box-shadow:4px 4px 0 var(--red);transform:translateY(-3px)}
 button.dog-type.sel h4::after{content:" ✓";color:var(--red)}
-.dog-types{margin-bottom:28px}
 .combo-rule{background:var(--yellow);border:3px solid var(--ink);border-radius:16px;padding:10px 14px;font-weight:800;margin:4px 0 6px;line-height:1.5}
 .combo-rule em{font-style:normal;font-family:Bangers,Impact,sans-serif;font-size:1.3rem;letter-spacing:1px;color:var(--red);margin:0 4px}
 .combo-rule .nod{display:block;font-size:.88rem;color:var(--red-dark)}
@@ -358,15 +355,15 @@ const SITE = {
   email: "hotdiggidydog2020@gmail.com",
   facebook: "https://www.facebook.com/search/top?q=Hot%20Diggity%20Dog%20Just%20Doggin%20Around",
 
-  // KASANTÚ WEST AFRICAN DISHES (right side of the menu)
-  // Add a dish by copying the example line, removing the // and filling it in.
-  // Empty spots show as "coming soon" until there are as many dishes as "spots".
+  // KASANTÚ WEST AFRICAN SPOT (slim card beside "Choose your dog")
+  // Fill in name to show a dish. Leave name "" to show "coming soon".
+  // Photo is optional: put the image in the img folder and write its path.
   kasantu: {
-    intro: "Select West African cuisine by Kasantú. Ask at the window about today's specials.",
-    spots: 3,
-    dishes: [
-      // { name: "Dish name", price: 12, desc: "Short description", img: "img/dish-photo.jpg" },
-    ]
+    show: true,
+    name: "",
+    price: null,
+    desc: "",
+    img: ""
   },
 
   // WHERE WE'LL BE: edit weekly
@@ -502,8 +499,6 @@ const SIDES = [
       <p id="menuSub">Tap a section, then add items to order ahead for pickup.</p>
     </div>
     <a class="btn btn-red square-cta" id="squareCta" target="_blank" rel="noopener" style="display:none">Order ahead on Square →</a>
-    <div class="menu-layout">
-    <div class="menu-main">
     <div class="tabs" role="tablist">
       <button class="tab active" data-t="dogs" role="tab">Custom Dogs</button>
       <button class="tab" data-t="chicken" role="tab">Chicken and Sandwiches</button>
@@ -514,7 +509,15 @@ const SIDES = [
 
     <div class="panel active" id="p-dogs">
       <div class="step"><span class="num">STEP 1</span><h3>Choose your dog</h3><span class="ptag red big">ANY DOG $7</span></div>
-      <div class="dog-types" id="dogTypes"></div>
+      <div class="step1-row">
+        <div class="dog-types" id="dogTypes"></div>
+        <aside class="kasantu" id="kasantu">
+          <img class="k-logo" src="logo.png" alt="Kasantú Hot Diggity Dog logo">
+          <div class="k-title">Kasantú</div>
+          <div class="k-sub">select West African cuisine</div>
+          <div id="kSlot"></div>
+        </aside>
+      </div>
       <div class="dropdown" id="styleDrop">
         <button class="drop-head" id="styleToggle" aria-expanded="false" aria-controls="styleBody">
           <span class="num">STEP 2</span>
@@ -565,20 +568,6 @@ const SIDES = [
         <div class="board-title">Sides and Drinks</div>
         <div id="sideList"></div>
       </div>
-    </div>
-    </div>
-
-    <aside class="kasantu" id="kasantu">
-      <div class="k-head">
-        <img src="logo.png" alt="Kasantú Hot Diggity Dog logo">
-        <div>
-          <div class="k-title">Kasantú</div>
-          <div class="k-sub">select West African cuisine</div>
-        </div>
-      </div>
-      <p class="k-intro" id="kIntro"></p>
-      <div id="kList"></div>
-    </aside>
     </div>
   </div>
 </section>
@@ -719,11 +708,11 @@ $("#ticker").innerHTML=[...words,...words].map(w=>`<span>${w}<i>★</i></span>`)
 
 
 /* menu render */
-const K=SITE.kasantu||{dishes:[],spots:0};
-const KDISH=(K.dishes||[]).filter(d=>d&&d.name);
-$("#kIntro").textContent=K.intro||"";
-$("#kList").innerHTML=KDISH.map(d=>`<div class="k-dish">${d.img?`<img src="${d.img}" alt="${esc(d.name)}" loading="lazy">`:""}<div class="kb"><div class="kt"><h4>${d.name}</h4>${d.price!=null?`<span class="ptag sm">$${d.price}</span>`:""}</div>${d.desc?`<p>${d.desc}</p>`:""}${addBtn(d)}</div></div>`).join("")
-  +Array.from({length:Math.max(0,(K.spots||0)-KDISH.length)},()=>`<div class="k-soon"><b>Coming soon</b><span>A new West African dish is on the way</span></div>`).join("");
+const K=SITE.kasantu||{};
+if(K.show===false)$("#kasantu").remove();
+else $("#kSlot").innerHTML=K.name
+  ?`<div class="k-dish">${K.img?`<img src="${K.img}" alt="${esc(K.name)}" loading="lazy">`:""}<div class="kb"><h4>${K.name}</h4>${K.price!=null?`<span class="ptag sm">$${K.price}</span>`:""}${K.desc?`<p>${K.desc}</p>`:""}${addBtn({name:K.name,price:K.price||0})}</div></div>`
+  :`<div class="k-soon"><b>Coming soon</b>West African specials. Ask at the window!</div>`;
 let selType=null;
 $("#dogTypes").innerHTML=DOGS.map(d=>`<button type="button" class="dog-type" data-dog="${esc(d)}"><h4>${d}</h4><small>${d==="Veggie Dog"?"plant-based option":"jumbo and juicy"}</small></button>`).join("");
 $("#dogTypes").addEventListener("click",e=>{

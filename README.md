@@ -16,7 +16,7 @@ One-page site for the Hot Diggity Dog food truck (Kasantú, select West African 
 
 ## Easy edits
 Open `index.html` on GitHub, click the pencil icon, and change the **EASY-EDIT SETTINGS** block near the top:
-- `kasantu`: West African dishes shown on the right side of the menu (empty spots say "coming soon")
+- `kasantu`: the single West African dish card next to "Choose your dog" (leave `name` empty to show "coming soon"; set `show: false` to hide it)
 - `schedule`: where the truck will be
 - `phone`, `phoneDigits`, `email`
 - `ordering.enabled`: set to `false` to hide the order buttons and cart
