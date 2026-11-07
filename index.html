@@ -264,9 +264,8 @@ button.dog-type.sel h4::after{content:" ✓";color:var(--red)}
 .lim-note{font-size:.78rem!important;margin:6px 0 0!important}
 .tab .ts{display:none}
 @media(max-width:1000px){.tab .tl{display:none}.tab .ts{display:inline}}
-@media(max-width:560px){.tabs{gap:3px;justify-content:center}.tab{padding:6px 6px;font-size:.72rem;border-width:2px}}
-@media(max-width:380px){.tab{padding:5px 4px;font-size:.66rem}}
-@media(max-width:340px){.tabs{gap:2px}.tab{padding:4px 3px;font-size:.6rem}}
+@media(max-width:560px){.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;overflow:visible}.tab{padding:9px 6px;font-size:.92rem;text-align:center}}
+@media(max-width:340px){.tab{font-size:.82rem}}
 /* gallery */
 .gallery{background:var(--ink);color:#fff;position:relative;overflow:hidden}
 .gallery .section-head h2{color:var(--yellow)}
