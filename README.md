@@ -24,5 +24,6 @@ Open `index.html` on GitHub, click the pencil icon, and change the **EASY-EDIT S
 - `ordering.payUrl`: the Cloudflare pay-helper URL (see `square-pay-helper/worker.js`); turns on "Pay now with card" through Square
 - `ordering.squareUrl`: paste the Square Online ordering link to send all orders to Square instead of the text-message cart
 
+Tonight's specials (like wings) are in the `SPECIALS` list: set `on:true` or `on:false` per item.
 Menu items and prices are in the lists right below it: `SIGNATURE` (hot dog styles), `CHICKEN` (chicken and sandwiches), `COMBOS`, `MORE` (nachos, fries, parfait) and `SIDES`.
 Click **Commit changes** and the live site updates in about a minute.

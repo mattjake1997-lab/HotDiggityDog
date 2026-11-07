@@ -58,7 +58,7 @@ const BASE_PRICES = {
   "Lemon Shake-Up (24 oz)": 7,
   "Lemon Shake-Up Refill": 4,
   "Build Your Own Dog": 7,
-  "Peanut Chicken": 10
+  "Peanut Sauce Chicken": 10
 };
 
 export default {
