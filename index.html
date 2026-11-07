@@ -245,17 +245,12 @@ section{padding:70px 0}
 .k-soon{border-top:2px dashed rgba(255,255,255,.45);padding-top:8px;font-weight:800;font-size:.85rem;color:#d7efe5;line-height:1.35}
 .k-soon b{display:block;font-family:Bangers,Impact,sans-serif;font-weight:400;font-size:1.2rem;letter-spacing:1.2px;color:#fff}
 @media(max-width:760px){.step1-row{grid-template-columns:minmax(0,1fr)}}
-.kasantu.tile{padding:10px 8px;border-radius:16px;box-shadow:4px 4px 0 var(--orange);justify-content:center}
-.kasantu.tile .k-logo{width:40px;height:40px;border-width:2px}
-.kasantu.tile .k-title{font-size:1.35rem;margin-top:4px}
-.kasantu.tile .k-sub{font-size:.95rem;margin-bottom:4px}
-.kasantu.tile .k-soon{font-size:.72rem;padding-top:5px;line-height:1.25}
-.kasantu.tile .k-soon b{font-size:1rem}
-.kasantu.tile .k-dish img{display:none}
-.kasantu.tile .k-dish .kb{padding:6px}
-.kasantu.tile .k-dish h4{font-size:.9rem}
-.kasantu.tile .k-dish p{display:none}
-.kasantu.tile .k-dish .btn-sm{padding:6px 10px;font-size:.8rem}
+.kasantu.tile{margin-top:22px;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:center;text-align:left;padding:14px}
+.kasantu.tile .k-logo{width:58px;height:58px;grid-row:span 2}
+.kasantu.tile .k-title{font-size:1.7rem;margin:0}
+.kasantu.tile .k-sub{margin:0;font-size:1.1rem}
+.kasantu.tile #kSlot{grid-column:1/-1;margin-top:10px}
+.kasantu.tile .k-soon{text-align:center}
 button.dog-type{font:inherit;color:inherit;cursor:pointer;transition:transform .12s,background .12s}
 button.dog-type:hover{transform:translateY(-3px);background:#FFF6D6}
 button.dog-type.sel{background:var(--yellow);box-shadow:4px 4px 0 var(--red);transform:translateY(-3px)}
@@ -768,7 +763,7 @@ else $("#kSlot").innerHTML=K.name
   :`<div class="k-soon"><b>Coming soon</b>West African specials. Ask at the window!</div>`;
 const kMQ=matchMedia("(max-width:760px)");
 function placeKasantu(){const k=$("#kasantu");if(!k)return;
-  if(kMQ.matches){$("#dogTypes").appendChild(k);k.classList.add("tile")}else{$(".step1-row").appendChild(k);k.classList.remove("tile")}}
+  if(kMQ.matches){$(".byo").after(k);k.classList.add("tile")}else{$(".step1-row").appendChild(k);k.classList.remove("tile")}}
 let selType=null;
 function updateDropLabel(){
   const open=$("#styleDrop").classList.contains("open");
