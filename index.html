@@ -244,7 +244,18 @@ section{padding:70px 0}
 .k-dish .ptag.sm{margin:4px 0 6px}
 .k-soon{border-top:2px dashed rgba(255,255,255,.45);padding-top:8px;font-weight:800;font-size:.85rem;color:#d7efe5;line-height:1.35}
 .k-soon b{display:block;font-family:Bangers,Impact,sans-serif;font-weight:400;font-size:1.2rem;letter-spacing:1.2px;color:#fff}
-@media(max-width:760px){.step1-row{grid-template-columns:minmax(0,1fr)}.kasantu{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:4px 10px;text-align:left}.kasantu .k-title,.kasantu .k-sub{margin:0}#kSlot{flex-basis:100%;text-align:center}}
+@media(max-width:760px){.step1-row{grid-template-columns:minmax(0,1fr)}}
+.kasantu.tile{padding:10px 8px;border-radius:16px;box-shadow:4px 4px 0 var(--orange);justify-content:center}
+.kasantu.tile .k-logo{width:40px;height:40px;border-width:2px}
+.kasantu.tile .k-title{font-size:1.35rem;margin-top:4px}
+.kasantu.tile .k-sub{font-size:.95rem;margin-bottom:4px}
+.kasantu.tile .k-soon{font-size:.72rem;padding-top:5px;line-height:1.25}
+.kasantu.tile .k-soon b{font-size:1rem}
+.kasantu.tile .k-dish img{display:none}
+.kasantu.tile .k-dish .kb{padding:6px}
+.kasantu.tile .k-dish h4{font-size:.9rem}
+.kasantu.tile .k-dish p{display:none}
+.kasantu.tile .k-dish .btn-sm{padding:6px 10px;font-size:.8rem}
 button.dog-type{font:inherit;color:inherit;cursor:pointer;transition:transform .12s,background .12s}
 button.dog-type:hover{transform:translateY(-3px);background:#FFF6D6}
 button.dog-type.sel{background:var(--yellow);box-shadow:4px 4px 0 var(--red);transform:translateY(-3px)}
@@ -755,12 +766,16 @@ if(K.show===false)$("#kasantu").remove();
 else $("#kSlot").innerHTML=K.name
   ?`<div class="k-dish">${K.img?`<img src="${K.img}" alt="${esc(K.name)}" loading="lazy">`:""}<div class="kb"><h4>${K.name}</h4>${K.price!=null?`<span class="ptag sm">$${K.price}</span>`:""}${K.desc?`<p>${K.desc}</p>`:""}${addBtn({name:K.name,price:K.price||0})}</div></div>`
   :`<div class="k-soon"><b>Coming soon</b>West African specials. Ask at the window!</div>`;
+const kMQ=matchMedia("(max-width:760px)");
+function placeKasantu(){const k=$("#kasantu");if(!k)return;
+  if(kMQ.matches){$("#dogTypes").appendChild(k);k.classList.add("tile")}else{$(".step1-row").appendChild(k);k.classList.remove("tile")}}
 let selType=null;
 function updateDropLabel(){
   const open=$("#styleDrop").classList.contains("open");
   $("#dropCount").textContent=selType?(open?"Your "+selType+" · tap to close":"Pick a style for your "+selType):(open?"Tap to close":"Tap to see all 13");
 }
 $("#dogTypes").innerHTML=DOGS.map(d=>`<button type="button" class="dog-type" data-dog="${esc(d)}"><h4>${d}</h4><small>${d==="Veggie Dog"?"plant-based option":"jumbo and juicy"}</small></button>`).join("");
+placeKasantu();kMQ.addEventListener("change",placeKasantu);
 $("#dogTypes").addEventListener("click",e=>{
   const b=e.target.closest(".dog-type");if(!b)return;
   selType=selType===b.dataset.dog?null:b.dataset.dog;
