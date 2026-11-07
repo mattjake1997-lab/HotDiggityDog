@@ -670,7 +670,6 @@ const SIDES = [
     <div id="checkout">
       <div class="field"><label for="oName">Name for the order</label><input id="oName" placeholder="Jordan"></div>
       <div class="field"><label for="oPhone">Your phone <span style="font-weight:700;color:var(--muted)">(we'll text you when it's ready)</span></label><input id="oPhone" type="tel" inputmode="tel" placeholder="(812) 555-0142"></div>
-      <div class="field"><label for="oTime">Pickup time</label><input id="oTime" placeholder="12:15 PM"></div>
       <div class="field"><label for="oNote">Notes</label><input id="oNote" placeholder="Extra napkins please"></div>
       <div class="err" id="oErr"></div>
       <button class="btn btn-red" id="sendOrder" style="width:100%;justify-content:center">Send order to the truck</button>
@@ -918,10 +917,10 @@ $("#cartFab").onclick=()=>{
 };
 document.querySelectorAll(".closeCart").forEach(b=>b.onclick=closeOverlay);
 $("#overlay").onclick=e=>{if(e.target.id==="overlay")closeOverlay()};
-["oName","oPhone","oTime"].forEach(id=>$("#"+id).addEventListener("input",()=>$("#oErr").textContent=""));
+["oName","oPhone"].forEach(id=>$("#"+id).addEventListener("input",()=>$("#oErr").textContent=""));
 
 function orderText(r){
-  let t=`HOT DIGGITY DOG ORDER #${r.num}\nName: ${r.name}\nText when ready: ${r.phone}\nPickup: ${r.pickup}\n\n`;
+  let t=`HOT DIGGITY DOG ORDER #${r.num}\nName: ${r.name}\nText when ready: ${r.phone}\n\n`;
   r.items.forEach(l=>t+=l+"\n");
   if(r.notes)t+=`\nNotes: ${r.notes}\n`;
   return t+`\nTotal: ${r.total} (pay at pickup)`;
@@ -931,7 +930,7 @@ function renderReceipt(r){
   const st=$("#tStatus");
   st.className="t-status "+(r.sent?"ok":"warn");
   st.textContent=r.sent?"✓ Sent to the truck":"Not sent yet. Text it to the truck below";
-  $("#tMeta").innerHTML=[["Name",r.name],["Pickup",r.pickup],["Phone",r.phone],["Placed",new Date(r.placed).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})],["Payment","At the window"]]
+  $("#tMeta").innerHTML=[["Name",r.name],["Phone",r.phone],["Placed",new Date(r.placed).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})],["Payment","At the window"]]
     .map(([a,b])=>`<div><span>${a}</span><span>${esc(b)}</span></div>`).join("")+(r.notes?`<div><span>Notes</span><span>${esc(r.notes)}</span></div>`:"");
   $("#tItems").innerHTML=r.lines.map(c=>`<div class="t-item"><div>${c.qty}x ${esc(c.name)}${c.detail?`<small>${esc(c.detail)}</small>`:""}</div><div>${money(c.qty*c.price)}</div></div>`).join("");
   $("#tTotal").textContent=r.total;
@@ -944,20 +943,19 @@ function renderReceipt(r){
   }else $("#sent").style.display="none";
 }
 $("#sendOrder").onclick=async()=>{
-  const name=$("#oName").value.trim(),time=$("#oTime").value.trim(),notes=$("#oNote").value.trim();
+  const name=$("#oName").value.trim(),notes=$("#oNote").value.trim();
   if(!name){$("#oErr").textContent="Enter a name for the order";return}
   const digits=$("#oPhone").value.replace(/\D/g,"").replace(/^1(?=\d{10}$)/,"");
   if(digits.length!==10){$("#oErr").textContent="Enter a 10-digit phone number so we can text you when it's ready";return}
-  if(!time){$("#oErr").textContent="Enter a pickup time";return}
   const total=cart.reduce((a,c)=>a+c.qty*c.price,0);
-  const r={name,phone:`(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`,pickup:time,notes,
+  const r={name,phone:`(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`,notes,
     items:cart.map(c=>`${c.qty}x ${c.name}${c.detail?" ("+c.detail+")":""} - ${money(c.qty*c.price)}`),
     lines:cart.map(c=>({...c})),total:money(total),payment:"Pay at window",placed:new Date().toISOString(),sent:false,num:null};
   const btn=$("#sendOrder");
   if(SHEET){
     btn.textContent="Sending to the truck…";btn.style.opacity=".7";
     try{
-      const res=await fetch(SHEET,{method:"POST",body:JSON.stringify({name:r.name,phone:r.phone,pickup:r.pickup,notes:r.notes,items:r.items,total:r.total,payment:r.payment})});
+      const res=await fetch(SHEET,{method:"POST",body:JSON.stringify({name:r.name,phone:r.phone,notes:r.notes,items:r.items,total:r.total,payment:r.payment})});
       const j=await res.json();if(j&&j.ok){r.num=j.num;r.sent=true}
     }catch(e){}
     btn.textContent="Send order to the truck";btn.style.opacity="";

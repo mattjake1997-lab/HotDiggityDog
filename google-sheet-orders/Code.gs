@@ -11,7 +11,7 @@
 const NOTIFY_EMAIL = "mattjake1997@gmail.com"; // "" to turn off order emails
 const SHEET_NAME = "Orders";
 const FIRST_ORDER_NUMBER = 101;
-const HEADERS = ["Order #", "Received", "Status", "Name", "Phone", "Pickup time", "Items", "Notes", "Total", "Payment"];
+const HEADERS = ["Order #", "Received", "Status", "Name", "Phone", "Items", "Notes", "Total", "Payment"];
 const STATUSES = ["NEW", "MAKING", "READY", "PICKED UP", "CANCELED"];
 
 /** Run once: builds the Orders tab with headers, status dropdown and colors. */
@@ -19,13 +19,13 @@ function setup() {
   const sh = getSheet_();
   const rule = SpreadsheetApp.newDataValidation().requireValueInList(STATUSES, true).build();
   sh.getRange("C2:C").setDataValidation(rule);
-  const range = sh.getRange("A2:J");
+  const range = sh.getRange("A2:I");
   const colors = { "NEW": "#FFE9A8", "MAKING": "#FFD3B0", "READY": "#C9EBD9", "PICKED UP": "#E6E6E6", "CANCELED": "#F4C7C7" };
   const rules = Object.keys(colors).map(s =>
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$C2="' + s + '"').setBackground(colors[s]).setRanges([range]).build());
   sh.setConditionalFormatRules(rules);
-  sh.setColumnWidth(7, 380);
-  sh.getRange("G:G").setWrap(true);
+  sh.setColumnWidth(6, 380);
+  sh.getRange("F:F").setWrap(true);
   // Ask once for email permission so new-order emails work.
   if (NOTIFY_EMAIL) MailApp.getRemainingDailyQuota();
 }
@@ -39,11 +39,11 @@ function doPost(e) {
     const sh = getSheet_();
     const num = FIRST_ORDER_NUMBER + Math.max(0, sh.getLastRow() - 1);
     const items = (d.items || []).map(String).join("\n");
-    sh.appendRow([num, new Date(), "NEW", clean_(d.name), "'" + clean_(d.phone), clean_(d.pickup), items,
+    sh.appendRow([num, new Date(), "NEW", clean_(d.name), "'" + clean_(d.phone), items,
                   clean_(d.notes), clean_(d.total), clean_(d.payment || "Pay at window")]);
     if (NOTIFY_EMAIL) {
-      MailApp.sendEmail(NOTIFY_EMAIL, "🌭 New order #" + num + " – " + clean_(d.name) + " (pickup " + clean_(d.pickup) + ")",
-        "Order #" + num + "\nName: " + clean_(d.name) + "\nPhone: " + clean_(d.phone) + "\nPickup: " + clean_(d.pickup) +
+      MailApp.sendEmail(NOTIFY_EMAIL, "🌭 New order #" + num + " – " + clean_(d.name),
+        "Order #" + num + "\nName: " + clean_(d.name) + "\nPhone: " + clean_(d.phone) +
         "\n\n" + items + (d.notes ? "\n\nNotes: " + clean_(d.notes) : "") + "\n\nTotal: " + clean_(d.total) +
         " (" + clean_(d.payment || "Pay at window") + ")");
     }
