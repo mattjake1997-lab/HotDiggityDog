@@ -20,6 +20,7 @@ Open `index.html` on GitHub, click the pencil icon, and change the **EASY-EDIT S
 - `schedule`: where the truck will be
 - `phone`, `phoneDigits`, `email`
 - `ordering.enabled`: set to `false` to hide the order buttons and cart
+- `ordering.sheetUrl`: the Google Apps Script Web app URL; orders then go straight into the Google Sheet (see `google-sheet-orders/Code.gs`)
 - `ordering.squareUrl`: paste the Square Online ordering link to send all orders to Square instead of the text-message cart
 
 Menu items and prices are in the lists right below it: `SIGNATURE` (hot dog styles), `CHICKEN` (chicken and sandwiches), `COMBOS`, `MORE` (nachos, fries, parfait) and `SIDES`.

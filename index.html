@@ -335,6 +335,23 @@ footer small{opacity:.8}
 .order-num{text-align:center;background:var(--yellow);border:3px solid var(--ink);border-radius:18px;padding:12px;margin-bottom:14px;box-shadow:4px 4px 0 var(--red)}
 .order-num b{display:block;font-family:Bangers,Impact,sans-serif;font-size:3.4rem;letter-spacing:2px;line-height:1;color:var(--red);margin:4px 0}
 .order-num small{font-weight:800;color:var(--muted)}
+.ticket{position:relative;background:#fff;border:3px solid var(--ink);border-radius:8px;padding:18px 18px 16px;box-shadow:5px 5px 0 var(--red);text-align:center;margin-top:10px;background-image:radial-gradient(circle at 10px -4px,var(--cream) 9px,transparent 10px),radial-gradient(circle at 10px calc(100% + 4px),var(--cream) 9px,transparent 10px);background-size:20px 100%;background-repeat:repeat-x}
+.t-logo{width:56px;margin:0 auto}
+.t-brand{font-family:Bangers,Impact,sans-serif;font-size:1.6rem;letter-spacing:1.5px;color:var(--red)}
+.t-label{font-weight:800;color:var(--muted);font-size:.85rem;margin-top:6px}
+.t-num{font-family:Bangers,Impact,sans-serif;font-size:4.2rem;line-height:1;letter-spacing:2px;color:var(--ink)}
+.t-status{display:inline-block;margin:8px 0 4px;padding:5px 12px;border-radius:999px;font-weight:900;font-size:.85rem}
+.t-status.ok{background:#DDF3E8;color:var(--green)}
+.t-status.warn{background:#FFE9D6;color:var(--red-dark)}
+.t-rows{border-top:2px dashed #d9c6a0;margin-top:10px;padding-top:10px;text-align:left;font-weight:700;font-size:.92rem}
+.t-rows div{display:flex;justify-content:space-between;gap:10px;padding:2px 0}
+.t-rows span:first-child{color:var(--muted)}
+.t-items{border-top:2px dashed #d9c6a0;margin-top:10px;padding-top:8px;text-align:left}
+.t-item{display:flex;justify-content:space-between;gap:10px;padding:5px 0;font-weight:800}
+.t-item small{display:block;font-weight:600;color:var(--muted);font-size:.82rem}
+.t-total{border-top:2px dashed #d9c6a0;margin-top:8px;padding-top:8px;display:flex;justify-content:space-between;font-family:Bangers,Impact,sans-serif;font-size:1.8rem;letter-spacing:1px}
+.t-foot{margin-top:6px;font-weight:900;color:var(--red);letter-spacing:.5px;text-transform:uppercase;font-size:.85rem}
+.t-stamp{position:absolute;top:16px;right:12px;border:3px solid var(--red);color:var(--red);border-radius:8px;padding:4px 8px;font-family:Bangers,Impact,sans-serif;font-size:1rem;line-height:1;letter-spacing:1px;transform:rotate(12deg);opacity:.85}
 .order-text{white-space:pre-wrap;background:#fff;border:2px solid #e3cc9c;border-radius:12px;padding:12px;font-size:.9rem}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:800;z-index:70;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
@@ -378,7 +395,9 @@ const SITE = {
   // squareUrl: paste his Square Online ordering link between the quotes to send
   //   every order to Square (pay online + automatic "order ready" texts).
   //   Leave it "" to use the built-in text-message order cart.
-  ordering: { enabled: true, squareUrl: "" }
+  // sheetUrl: paste the Google Apps Script "Web app" URL here so orders go
+  //   straight into the Google Sheet. Leave it "" to use text-message ordering.
+  ordering: { enabled: true, squareUrl: "", sheetUrl: "" }
 };
 
 /* ------------------ MENU ------------------ */
@@ -638,7 +657,8 @@ const SIDES = [
 
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Your order">
   <div class="sheet">
-    <div class="sheet-head"><h2>Your order</h2><button class="x" id="closeCart" aria-label="Close">×</button></div>
+    <div id="cartView">
+    <div class="sheet-head"><h2>Your order</h2><button class="x closeCart" aria-label="Close">×</button></div>
     <div id="cartLines"></div>
     <div class="total"><span>Total</span><span id="cartTotal">$0.00</span></div>
     <div id="checkout">
@@ -650,13 +670,33 @@ const SIDES = [
       <button class="btn btn-red" id="sendOrder" style="width:100%;justify-content:center">Send order to the truck</button>
       <p style="font-size:.88rem;color:var(--muted);text-align:center;margin:10px 0 0;font-weight:700">Pay at the window when you pick up.</p>
     </div>
-    <div id="sent" style="display:none">
-      <div class="order-num">Your order number<b id="orderNum"></b><small>Show this at the window</small></div>
-      <p style="font-weight:900">Last step: text this order to <span id="sentPhone"></span>. We'll text you back when it's ready.</p>
-      <div class="order-text" id="orderText"></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
-        <a class="btn btn-red" id="smsLink">Open text message</a>
-        <button class="btn btn-light" id="copyOrder">Copy order</button>
+    </div>
+
+    <div id="receiptView" style="display:none">
+      <div class="sheet-head"><h2>Your receipt</h2><button class="x closeCart" aria-label="Close">×</button></div>
+      <div class="ticket" id="ticket">
+        <div class="t-stamp" id="tStamp">PAY AT<br>WINDOW</div>
+        <img class="t-logo" src="img/mascot.png" alt="">
+        <div class="t-brand">Hot Diggity Dog</div>
+        <div class="t-label">Order number</div>
+        <div class="t-num" id="tNum"></div>
+        <div class="t-status" id="tStatus"></div>
+        <div class="t-rows" id="tMeta"></div>
+        <div class="t-items" id="tItems"></div>
+        <div class="t-total"><span>Total</span><span id="tTotal"></span></div>
+        <div class="t-foot">Show this screen at the window</div>
+      </div>
+      <div id="sent" style="display:none;margin-top:16px">
+        <p style="font-weight:900;margin:0 0 8px" id="sentMsg"></p>
+        <div class="order-text" id="orderText"></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+          <a class="btn btn-red" id="smsLink">Open text message</a>
+          <button class="btn btn-light" id="copyOrder">Copy order</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
+        <button class="btn btn-green" id="doneBtn">Done</button>
+        <button class="btn btn-light" id="newOrderBtn">Start a new order</button>
       </div>
     </div>
   </div>
@@ -680,6 +720,8 @@ const $=s=>document.querySelector(s);
 const money=n=>"$"+n.toFixed(2);
 const SQUARE=(SITE.ordering.squareUrl||"").trim();
 const ORDER=SITE.ordering.enabled&&!SQUARE; // built-in cart only when no Square link
+const SHEET=(SITE.ordering.sheetUrl||"").trim();
+let lastReceipt=null;try{lastReceipt=JSON.parse(localStorage.getItem("hddReceipt")||"null")}catch(e){}
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
 const REG={}; let regN=0;
 const reg=it=>{const k="i"+(regN++);REG[k]=it;return k};
@@ -847,37 +889,74 @@ function addToCart(name,price,detail,qty=1){
 }
 function renderCart(){
   const count=cart.reduce((a,c)=>a+c.qty,0),total=cart.reduce((a,c)=>a+c.qty*c.price,0);
-  $("#cartFab").classList.toggle("show",ORDER&&count>0);
-  $("#fabText").textContent=count+" item"+(count===1?"":"s")+" · "+money(total);
+  $("#cartFab").classList.toggle("show",ORDER&&(count>0||!!lastReceipt));
+  $("#fabText").textContent=count>0?count+" item"+(count===1?"":"s")+" · "+money(total):"🧾 My receipt #"+(lastReceipt?lastReceipt.num:"");
   $("#cartTotal").textContent=money(total);
   $("#cartLines").innerHTML=cart.length?cart.map((c,i)=>`<div class="line"><div><strong>${c.name}</strong>${c.detail?`<small>${esc(c.detail)}</small>`:""}<small>${money(c.price)} each</small></div>
     <div class="qty"><button data-i="${i}" data-d="-1" aria-label="Remove one">−</button><span>${c.qty}</span><button data-i="${i}" data-d="1" aria-label="Add one">+</button></div></div>`).join(""):`<p class="empty">Your order is empty.</p>`;
   document.querySelectorAll("#cartLines .qty button").forEach(b=>b.onclick=()=>{const c=cart[b.dataset.i];c.qty+=+b.dataset.d;if(c.qty<1)cart.splice(b.dataset.i,1);renderCart()});
   $("#checkout").style.display=cart.length?"block":"none";
-  if(!cart.length)$("#sent").style.display="none";
 }
-$("#cartFab").onclick=()=>{$("#overlay").classList.add("open");$("#sent").style.display="none";$("#checkout").style.display=cart.length?"block":"none"};
-$("#closeCart").onclick=()=>$("#overlay").classList.remove("open");
-$("#overlay").onclick=e=>{if(e.target.id==="overlay")$("#overlay").classList.remove("open")};
+const showView=v=>{$("#cartView").style.display=v==="cart"?"block":"none";$("#receiptView").style.display=v==="receipt"?"block":"none"};
+const closeOverlay=()=>$("#overlay").classList.remove("open");
+$("#cartFab").onclick=()=>{
+  if(cart.length)showView("cart");else if(lastReceipt){renderReceipt(lastReceipt);showView("receipt")}
+  $("#overlay").classList.add("open");
+};
+document.querySelectorAll(".closeCart").forEach(b=>b.onclick=closeOverlay);
+$("#overlay").onclick=e=>{if(e.target.id==="overlay")closeOverlay()};
 ["oName","oPhone","oTime"].forEach(id=>$("#"+id).addEventListener("input",()=>$("#oErr").textContent=""));
-$("#sendOrder").onclick=()=>{
-  const name=$("#oName").value.trim(),time=$("#oTime").value.trim();
+
+function orderText(r){
+  let t=`HOT DIGGITY DOG ORDER #${r.num}\nName: ${r.name}\nText when ready: ${r.phone}\nPickup: ${r.pickup}\n\n`;
+  r.items.forEach(l=>t+=l+"\n");
+  if(r.notes)t+=`\nNotes: ${r.notes}\n`;
+  return t+`\nTotal: ${r.total} (pay at pickup)`;
+}
+function renderReceipt(r){
+  $("#tNum").textContent="#"+r.num;
+  const st=$("#tStatus");
+  st.className="t-status "+(r.sent?"ok":"warn");
+  st.textContent=r.sent?"✓ Sent to the truck":"Not sent yet. Text it to the truck below";
+  $("#tMeta").innerHTML=[["Name",r.name],["Pickup",r.pickup],["Phone",r.phone],["Placed",new Date(r.placed).toLocaleString([], {month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})],["Payment","At the window"]]
+    .map(([a,b])=>`<div><span>${a}</span><span>${esc(b)}</span></div>`).join("")+(r.notes?`<div><span>Notes</span><span>${esc(r.notes)}</span></div>`:"");
+  $("#tItems").innerHTML=r.lines.map(c=>`<div class="t-item"><div>${c.qty}x ${esc(c.name)}${c.detail?`<small>${esc(c.detail)}</small>`:""}</div><div>${money(c.qty*c.price)}</div></div>`).join("");
+  $("#tTotal").textContent=r.total;
+  if(!r.sent){
+    const txt=orderText(r);
+    $("#sentMsg").textContent=SHEET?`We couldn't reach the truck's order system. Text this order to ${SITE.phone} instead:`:`Last step: text this order to ${SITE.phone}. We'll text you back when it's ready.`;
+    $("#orderText").textContent=txt;
+    $("#smsLink").href=`sms:${SITE.phoneDigits}?&body=${encodeURIComponent(txt)}`;
+    $("#sent").style.display="block";
+  }else $("#sent").style.display="none";
+}
+$("#sendOrder").onclick=async()=>{
+  const name=$("#oName").value.trim(),time=$("#oTime").value.trim(),notes=$("#oNote").value.trim();
   if(!name){$("#oErr").textContent="Enter a name for the order";return}
-  const phone=$("#oPhone").value.trim(),digits=phone.replace(/\D/g,"").replace(/^1(?=\d{10}$)/,"");
+  const digits=$("#oPhone").value.replace(/\D/g,"").replace(/^1(?=\d{10}$)/,"");
   if(digits.length!==10){$("#oErr").textContent="Enter a 10-digit phone number so we can text you when it's ready";return}
   if(!time){$("#oErr").textContent="Enter a pickup time";return}
-  const prettyPhone=`(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
-  const num=String(Math.floor(Date.now()/1000)%9000+1000);
   const total=cart.reduce((a,c)=>a+c.qty*c.price,0);
-  let txt=`HOT DIGGITY DOG ORDER #${num}\nName: ${name}\nText when ready: ${prettyPhone}\nPickup: ${time}\n\n`;
-  cart.forEach(c=>{txt+=`${c.qty}x ${c.name}${c.detail?" ("+c.detail+")":""} - ${money(c.qty*c.price)}\n`});
-  if($("#oNote").value.trim())txt+=`\nNotes: ${$("#oNote").value.trim()}\n`;
-  txt+=`\nTotal: ${money(total)} (pay at pickup)`;
-  $("#orderText").textContent=txt;$("#sentPhone").textContent=SITE.phone;$("#orderNum").textContent="#"+num;
-  $("#smsLink").href=`sms:${SITE.phoneDigits}?&body=${encodeURIComponent(txt)}`;
-  $("#checkout").style.display="none";$("#sent").style.display="block";
+  const r={name,phone:`(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`,pickup:time,notes,
+    items:cart.map(c=>`${c.qty}x ${c.name}${c.detail?" ("+c.detail+")":""} - ${money(c.qty*c.price)}`),
+    lines:cart.map(c=>({...c})),total:money(total),payment:"Pay at window",placed:new Date().toISOString(),sent:false,num:null};
+  const btn=$("#sendOrder");
+  if(SHEET){
+    btn.textContent="Sending to the truck…";btn.style.opacity=".7";
+    try{
+      const res=await fetch(SHEET,{method:"POST",body:JSON.stringify({name:r.name,phone:r.phone,pickup:r.pickup,notes:r.notes,items:r.items,total:r.total,payment:r.payment})});
+      const j=await res.json();if(j&&j.ok){r.num=j.num;r.sent=true}
+    }catch(e){}
+    btn.textContent="Send order to the truck";btn.style.opacity="";
+  }
+  if(!r.num)r.num=String(Math.floor(Date.now()/1000)%9000+1000);
+  lastReceipt=r;try{localStorage.setItem("hddReceipt",JSON.stringify(r))}catch(e){}
+  cart=[];renderCart();
+  renderReceipt(r);showView("receipt");
 };
 $("#copyOrder").onclick=async()=>{try{await navigator.clipboard.writeText($("#orderText").textContent);toast("Order copied")}catch(e){toast("Select the text to copy it")}};
+$("#doneBtn").onclick=closeOverlay;
+$("#newOrderBtn").onclick=()=>{closeOverlay();document.querySelector("#menu").scrollIntoView({behavior:"smooth"})};
 
 /* booking */
 $("#bookForm").addEventListener("input",()=>$("#bErr").textContent="");
