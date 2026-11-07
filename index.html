@@ -158,6 +158,7 @@ section{padding:70px 0}
 .row-item{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:12px 0;border-bottom:3px dotted #e6cfa2}
 .row-item:last-child{border-bottom:0}
 .thumb{width:74px;height:74px;border-radius:14px;object-fit:cover;border:3px solid var(--ink)}
+.thumb[src*="crispy-chicken"]{object-position:78% 40%}
 .thumb.blank{background:var(--yellow);display:grid;place-items:center;font-size:1.8rem}
 .row-item h4{font-size:1.15rem}
 .row-item p{margin:2px 0 0;color:var(--muted);font-weight:600;font-size:.9rem}
@@ -383,10 +384,10 @@ const SITE = {
   // Photo is optional: put the image in the img folder and write its path.
   kasantu: {
     show: true,
-    name: "",
-    price: null,
-    desc: "",
-    img: ""
+    name: "Peanut Chicken",
+    price: 10,
+    desc: "Served over white rice",
+    img: "img/peanut-chicken.jpg"
   },
 
   // WHERE WE'LL BE: edit weekly
@@ -447,7 +448,7 @@ const CHICKEN = [
   {name:"Chicken Tenders (3 pc)", price:7, sauces:2, meal:true, desc:"Comes with 2 sauces", icon:"🍗"},
   {name:"Chicken Tenders (5 pc)", price:9, sauces:3, meal:true, desc:"Comes with 3 sauces", icon:"🍗"},
   {name:"BBQ Pulled Pork or Chicken Sandwich", price:8, groups:[PROTEIN], tops:["Pickles","Diced onions"], meal:true, desc:"BBQ pulled pork or chicken topped with pickles and diced onions", icon:"🥪"},
-  {name:"Crispy Chicken Sandwich", price:8, tops:["Tomato","Sweet and spicy slaw"], meal:true, desc:"Crispy chicken with sliced tomato and sweet and spicy slaw", icon:"🍔"},
+  {name:"Crispy Chicken Sandwich", price:8, img:"img/crispy-chicken.jpg", tops:["Tomato","Sweet and spicy slaw"], meal:true, desc:"Crispy chicken with sliced tomato and sweet and spicy slaw"},
   {name:"Fried Tilapia Sandwich", price:8, tops:["Lettuce","Tartar sauce","Hot sauce"], meal:true, desc:"Includes lettuce, tartar sauce, and hot sauce packets", icon:"🐟"},
   {name:"Fried Tilapia (2 pc)", price:10, tops:["Tartar sauce","Hot sauce"], meal:true, desc:"Two pieces with tartar sauce and hot sauce packets", icon:"🐟"},
   {name:"Pork Parfait", price:9, img:"img/parfait.jpg", tops:["Sweet corn","Shredded cheese","BBQ drizzle"], desc:"Mashed potatoes layered with BBQ pulled pork, sweet corn, shredded cheese, and BBQ drizzle"}
