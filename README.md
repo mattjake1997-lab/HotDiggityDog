@@ -16,11 +16,11 @@ One-page site for the Hot Diggity Dog food truck (Kasantú, select West African 
 
 ## Easy edits
 Open `index.html` on GitHub, click the pencil icon, and change the **EASY-EDIT SETTINGS** block near the top:
-- `itemOfMonth`: name, price, description for the monthly special
+- `kasantu`: West African dishes shown on the right side of the menu (empty spots say "coming soon")
 - `schedule`: where the truck will be
 - `phone`, `phoneDigits`, `email`
 - `ordering.enabled`: set to `false` to hide the order buttons and cart
+- `ordering.squareUrl`: paste the Square Online ordering link to send all orders to Square instead of the text-message cart
 
 Menu items and prices are in the lists right below it: `SIGNATURE` (hot dog styles), `CHICKEN` (chicken and sandwiches), `COMBOS`, `MORE` (nachos, fries, parfait) and `SIDES`.
-The item of the month uses `ref`, which must match a menu item name exactly (for example "Firecracker").
 Click **Commit changes** and the live site updates in about a minute.

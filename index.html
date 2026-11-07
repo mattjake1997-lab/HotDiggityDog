@@ -226,6 +226,39 @@ section{padding:70px 0}
 .drop-inner{overflow:hidden}
 .drop-inner .sig-grid{padding:20px}
 @media(max-width:600px){.drop-title{font-size:1.9rem}.chev{width:40px;height:40px}}
+/* menu + Kasantú side column */
+.menu-sec{padding-top:56px}
+.menu-wrap{max-width:1360px}
+.menu-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start}
+.square-cta{display:flex;width:max-content;margin:-14px auto 26px;font-size:1.1rem}
+.kasantu{position:sticky;top:84px;background:var(--green);color:#fff;border:3px solid var(--ink);border-radius:24px;padding:20px;box-shadow:6px 6px 0 var(--orange);max-height:calc(100vh - 100px);overflow:auto}
+.k-head{display:flex;align-items:center;gap:12px}
+.k-head img{width:78px;height:78px;border-radius:50%;background:#fff;border:3px solid var(--ink);object-fit:cover;flex:none}
+.k-title{font-family:Bangers,Impact,sans-serif;font-size:2.4rem;letter-spacing:2px;color:var(--yellow);line-height:1;text-shadow:3px 3px 0 var(--ink)}
+.k-sub{font-family:Caveat,cursive;font-size:1.45rem;line-height:1.05;color:#ffe9c7}
+.k-intro{margin:14px 0 6px;font-weight:700;font-size:.95rem;color:#e3f3ec}
+.k-dish{background:#fff;color:var(--ink);border:3px solid var(--ink);border-radius:18px;margin-top:14px;overflow:hidden;box-shadow:4px 4px 0 var(--ink)}
+.k-dish img{width:100%;height:140px;object-fit:cover;border-bottom:3px solid var(--ink)}
+.k-dish .kb{padding:12px 14px}
+.k-dish .kt{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.k-dish h4{font-size:1.2rem;color:var(--green)}
+.k-dish p{margin:4px 0 8px;color:var(--muted);font-weight:600;font-size:.9rem}
+.k-soon{margin-top:14px;border:3px dashed rgba(255,255,255,.55);border-radius:18px;padding:18px 14px;text-align:center}
+.k-soon b{display:block;font-family:Bangers,Impact,sans-serif;font-size:1.5rem;letter-spacing:1.5px;color:var(--yellow)}
+.k-soon span{font-weight:700;font-size:.88rem;color:#d7efe5}
+@media(max-width:1100px){.menu-layout{grid-template-columns:minmax(0,1fr)}.kasantu{position:static;max-height:none}}
+button.dog-type{font:inherit;color:inherit;cursor:pointer;transition:transform .12s,background .12s}
+button.dog-type:hover{transform:translateY(-3px);background:#FFF6D6}
+button.dog-type.sel{background:var(--yellow);box-shadow:4px 4px 0 var(--red);transform:translateY(-3px)}
+button.dog-type.sel h4::after{content:" ✓";color:var(--red)}
+.dog-types{margin-bottom:28px}
+.combo-rule{background:var(--yellow);border:3px solid var(--ink);border-radius:16px;padding:10px 14px;font-weight:800;margin:4px 0 6px;line-height:1.5}
+.combo-rule em{font-style:normal;font-family:Bangers,Impact,sans-serif;font-size:1.3rem;letter-spacing:1px;color:var(--red);margin:0 4px}
+.combo-rule .nod{display:block;font-size:.88rem;color:var(--red-dark)}
+.combo-rule .ptag.sm{margin-right:4px;background:#fff}
+.either{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:6px 0 2px}
+.either span{background:#FFF1D0;border:2px solid var(--ink);border-radius:999px;padding:3px 10px;font-weight:900;font-size:.82rem}
+.either i{font-style:normal;font-family:Bangers,Impact,sans-serif;color:var(--red);font-size:1.1rem;letter-spacing:1px}
 /* gallery */
 .gallery{background:var(--ink);color:#fff;position:relative;overflow:hidden}
 .gallery .section-head h2{color:var(--yellow)}
@@ -325,11 +358,15 @@ const SITE = {
   email: "hotdiggidydog2020@gmail.com",
   facebook: "https://www.facebook.com/search/top?q=Hot%20Diggity%20Dog%20Just%20Doggin%20Around",
 
-  // ITEM OF THE MONTH: "ref" must match a menu item name exactly
-  itemOfMonth: {
-    month: "November",
-    ref: "Pork Parfait",
-    blurb: "Comfort food in a cup. Creamy mashed potatoes layered with BBQ pulled pork, sweet corn, shredded cheese, and a BBQ drizzle on top."
+  // KASANTÚ WEST AFRICAN DISHES (right side of the menu)
+  // Add a dish by copying the example line, removing the // and filling it in.
+  // Empty spots show as "coming soon" until there are as many dishes as "spots".
+  kasantu: {
+    intro: "Select West African cuisine by Kasantú. Ask at the window about today's specials.",
+    spots: 3,
+    dishes: [
+      // { name: "Dish name", price: 12, desc: "Short description", img: "img/dish-photo.jpg" },
+    ]
   },
 
   // WHERE WE'LL BE: edit weekly
@@ -339,14 +376,18 @@ const SITE = {
     { day: "Any day", where: "Your event", when: "Private bookings available" }
   ],
 
-  // ONLINE ORDERING: set to false to hide all order buttons and the cart
-  ordering: { enabled: true }
+  // ONLINE ORDERING
+  // enabled: false hides all ordering.
+  // squareUrl: paste his Square Online ordering link between the quotes to send
+  //   every order to Square (pay online + automatic "order ready" texts).
+  //   Leave it "" to use the built-in text-message order cart.
+  ordering: { enabled: true, squareUrl: "" }
 };
 
 /* ------------------ MENU ------------------ */
 const DOGS = ["Jumbo Angus","Jumbo Traditional","Polish Sausage","Brat","Veggie Dog"];
 const TOPPINGS = ["Ketchup","Mustard","Relish","Pickles","Jalapeños","Chili sauce","Cheese sauce","Red onion","Sport peppers","Giardiniera peppers","Sauerkraut","Tomato wedges","Mayonnaise","Horseradish","Celery salt","Spicy brown mustard"];
-const SIDE = {label:"Side", choices:[["Fries",0],["Chips",0],["Chili fries",2]]};
+const SIDE = {label:"Comes with (pick one)", choices:[["Chips + a soda",0],["Chips + a water",0],["Fries (no drink)",0],["Chili fries (no drink)",2]]};
 const DRINK = {label:"Drink", choices:[["Soda",0],["Water",0]]};
 const PROTEIN = {label:"Choose your meat", choices:[["BBQ pulled pork",0],["BBQ chicken",0]]};
 const SAUCES = ["Honey mustard","Barbecue","Ketchup","Ranch","Hot sauce"];
@@ -355,7 +396,7 @@ const SIGNATURE = [
   {name:"Firecracker", spicy:true, img:"img/firecracker.jpg", tops:["Jalapeños","Cheese sauce","Crushed Grippos"]},
   {name:"Spanish Dog", img:"img/spanish.jpg", tops:["Spanish dog sauce","Shredded cheese","Diced onions"]},
   {name:"Chili Cheese Dog", img:"img/chili-cheese.jpg", tops:["Chili sauce"], groups:[{label:"Cheese", choices:[["Nacho cheese",0],["Shredded cheese",0]]}], desc:"Chili and nacho cheese or shredded cheese"},
-  {name:"South of the Border", spicy:true, img:"img/south-border.jpg", tops:["Jalapeños","Sport peppers","Chili sauce","Diced onions"]},
+  {name:"South of the Border", spicy:true, img:"img/south-border.jpg", tops:["Jalapeños","Sport peppers","Chili sauce","Cheese sauce","Diced onions"]},
   {name:"Cali Dog", img:"img/cali.jpg", tops:["Mashed avocado","Diced cucumber","Ranch dressing"]},
   {name:"Everything Dog", img:"img/everything.jpg", tops:["Cream cheese","Everything bagel seasoning","Green onions"]},
   {name:"Fiery Diggity", spicy:true, img:"img/fiery-diggity.jpg", tops:["Sport peppers","Giardiniera peppers"]},
@@ -371,9 +412,9 @@ const SIGNATURE = [
 const BYO = {name:"Build Your Own Dog", price:7, kind:"dog", pick:DOGS, tops:[], byo:true, img:"img/street.jpg", desc:"Pick your dog and up to 5 toppings. Each extra topping is 50¢."};
 
 const COMBOS = [
-  {n:1, name:"Any Hot Dog Combo", price:10, kind:"dog", pick:DOGS, styles:true, groups:[SIDE,DRINK], desc:"Any hot dog + fries or chips with a drink", sub:"Sub chili fries for +$2", img:"img/lineup.jpg"},
-  {n:2, name:"Crispy Chicken Sandwich Combo", price:11, tops:["Mayo","Sweet and spicy slaw","Onion"], groups:[SIDE,DRINK], desc:"Crispy chicken sandwich + fries or chips with a drink", sub:"Topped with mayo, sweet and spicy slaw, and onion"},
-  {n:3, name:"BBQ Sandwich Combo", price:11, tops:["Pickles","Onion"], groups:[PROTEIN,SIDE,DRINK], desc:"BBQ pulled pork or chicken + fries or chips with a drink", sub:"Topped with pickles and onion"},
+  {n:1, name:"Any Hot Dog Combo", price:10, kind:"dog", pick:DOGS, styles:true, groups:[SIDE], either:true, desc:"Any hot dog", sub:"Sub chili fries for +$2", img:"img/lineup.jpg"},
+  {n:2, name:"Crispy Chicken Sandwich Combo", price:11, tops:["Mayo","Sweet and spicy slaw","Onion"], groups:[SIDE], either:true, desc:"Crispy chicken sandwich", sub:"Topped with mayo, sweet and spicy slaw, and onion"},
+  {n:3, name:"BBQ Sandwich Combo", price:11, tops:["Pickles","Onion"], groups:[PROTEIN,SIDE], either:true, desc:"BBQ pulled pork or chicken sandwich", sub:"Topped with pickles and onion"},
   {n:4, name:"Mozzarella Sticks Combo", price:12, groups:[{label:"Dipping sauce", choices:[["Marinara",0],["Ranch",0]]},DRINK], desc:"Mozzarella sticks + fries with a drink", sub:"Choice of marinara or ranch"},
   {n:5, name:"Any Dog + Lemon Shake-Up", price:12, kind:"dog", pick:DOGS, styles:true, desc:"Any hot dog + a fresh lemon shake-up", sub:"Fresh lemons, shaken to order"}
 ];
@@ -386,11 +427,11 @@ const CHICKEN = [
   {name:"BBQ Pulled Pork or Chicken Sandwich", price:8, groups:[PROTEIN], tops:["Pickles","Diced onions"], meal:true, desc:"BBQ pulled pork or chicken topped with pickles and diced onions", icon:"🥪"},
   {name:"Crispy Chicken Sandwich", price:8, tops:["Tomato","Sweet and spicy slaw"], meal:true, desc:"Crispy chicken with sliced tomato and sweet and spicy slaw", icon:"🍔"},
   {name:"Fried Tilapia Sandwich", price:8, tops:["Lettuce","Tartar sauce","Hot sauce"], meal:true, desc:"Includes lettuce, tartar sauce, and hot sauce packets", icon:"🐟"},
-  {name:"Fried Tilapia (2 pc)", price:10, tops:["Tartar sauce","Hot sauce"], meal:true, desc:"Two pieces with tartar sauce and hot sauce packets", icon:"🐟"}
+  {name:"Fried Tilapia (2 pc)", price:10, tops:["Tartar sauce","Hot sauce"], meal:true, desc:"Two pieces with tartar sauce and hot sauce packets", icon:"🐟"},
+  {name:"Pork Parfait", price:9, img:"img/parfait.jpg", tops:["Sweet corn","Shredded cheese","BBQ drizzle"], desc:"Mashed potatoes layered with BBQ pulled pork, sweet corn, shredded cheese, and BBQ drizzle"}
 ];
 
 const MORE = [
-  {name:"Pork Parfait", price:9, img:"img/parfait.jpg", tops:["Sweet corn","Shredded cheese","BBQ drizzle"], desc:"Mashed potatoes layered with BBQ pulled pork, sweet corn, shredded cheese, and BBQ drizzle"},
   {name:"Loaded Nachos", price:10, img:"img/nachos.jpg", groups:[PROTEIN], tops:["Cheese sauce","Diced onion","Jalapeños","Sour cream"], desc:"BBQ pulled pork or chicken, cheese sauce, diced onion, jalapeños, and sour cream"},
   {name:"Regular Nachos", price:7, tops:["Chili sauce","Cheese sauce","Diced onion","Jalapeños","Sour cream"], desc:"Chili sauce, cheese sauce, diced onion, jalapeños, and sour cream", icon:"🧀"},
   {name:"Chili Cheese Fries", price:7, tops:["Chili","Cheese sauce"], desc:"Fries topped with chili and cheese sauce", icon:"🍟"},
@@ -415,7 +456,7 @@ const SIDES = [
     <a class="brand" href="#top"><img src="img/mascot.png" alt=""><span>Hot Diggity Dog</span></a>
     <button class="menu-toggle" aria-label="Open menu" id="menuToggle">☰</button>
     <nav class="links" id="links">
-      <a href="#special">Special</a>
+      <a href="#kasantu">Kasantú</a>
       <a href="#menu">Menu</a>
       <a href="#photos">Photos</a>
       <a href="#find">Find us</a>
@@ -453,33 +494,22 @@ const SIDES = [
 </div>
 <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
 
-<section class="special" id="special">
-  <div class="wrap">
-    <div class="special-card">
-      <img class="special-mascot" src="img/mascot.png" alt="">
-      <div class="special-photo"><img id="spImg" alt=""></div>
-      <div class="special-body">
-        <span class="tag" id="spTag"></span>
-        <h2 id="spName"></h2>
-        <p id="spDesc"></p>
-        <span class="ptag" id="spPrice" style="font-size:2.6rem;margin-right:16px;vertical-align:middle"></span>
-        <button class="btn btn-light order-only" id="spAdd">Customize and add</button>
-      </div>
-    </div>
-  </div>
-</section>
 
 <section class="menu-sec" id="menu">
-  <div class="wrap">
+  <div class="wrap menu-wrap">
     <div class="section-head">
       <h2 class="menu-title">The Menu</h2>
       <p id="menuSub">Tap a section, then add items to order ahead for pickup.</p>
     </div>
+    <a class="btn btn-red square-cta" id="squareCta" target="_blank" rel="noopener" style="display:none">Order ahead on Square →</a>
+    <div class="menu-layout">
+    <div class="menu-main">
     <div class="tabs" role="tablist">
       <button class="tab active" data-t="dogs" role="tab">Custom Dogs</button>
       <button class="tab" data-t="chicken" role="tab">Chicken and Sandwiches</button>
       <button class="tab" data-t="loaded" role="tab">Nachos and Fries</button>
-      <button class="tab" data-t="combos" role="tab">Combos and Drinks</button>
+      <button class="tab" data-t="combos" role="tab">Combos</button>
+      <button class="tab" data-t="sides" role="tab">Sides and Drinks</button>
     </div>
 
     <div class="panel active" id="p-dogs">
@@ -508,7 +538,7 @@ const SIDES = [
 
     <div class="panel" id="p-chicken">
       <div class="board">
-        <div class="board-title">Chicken and Sandwiches</div>
+        <div class="board-title">Chicken, Sandwiches and More</div>
         <p class="board-sub">Make any of these a meal with fries and a drink for <b>+$4</b>.</p>
         <div id="chickenList"></div>
         <div class="pill-row"><span>Sauces: honey mustard, BBQ, ketchup, ranch, hot sauce</span><span>Extra sauce 50¢ each</span></div>
@@ -523,16 +553,32 @@ const SIDES = [
     </div>
 
     <div class="panel" id="p-combos">
-      <div class="two-col" style="margin-top:0">
-        <div class="board">
-          <div class="board-title">Combos</div>
-          <div id="comboList"></div>
-        </div>
-        <div class="sides">
-          <div class="board-title">Sides and Drinks</div>
-          <div id="sideList"></div>
+      <div class="board">
+        <div class="board-title">Combos</div>
+        <div class="combo-rule"><span class="ptag sm">Combos 1–3</span> come with <b>chips + a drink</b> <em>or</em> <b>fries</b> <span class="nod">(fries combos do not include a drink)</span></div>
+        <div id="comboList"></div>
+      </div>
+    </div>
+
+    <div class="panel" id="p-sides">
+      <div class="sides">
+        <div class="board-title">Sides and Drinks</div>
+        <div id="sideList"></div>
+      </div>
+    </div>
+    </div>
+
+    <aside class="kasantu" id="kasantu">
+      <div class="k-head">
+        <img src="logo.png" alt="Kasantú Hot Diggity Dog logo">
+        <div>
+          <div class="k-title">Kasantú</div>
+          <div class="k-sub">select West African cuisine</div>
         </div>
       </div>
+      <p class="k-intro" id="kIntro"></p>
+      <div id="kList"></div>
+    </aside>
     </div>
   </div>
 </section>
@@ -643,7 +689,8 @@ const SIDES = [
 <script>
 const $=s=>document.querySelector(s);
 const money=n=>"$"+n.toFixed(2);
-const ORDER=SITE.ordering.enabled;
+const SQUARE=(SITE.ordering.squareUrl||"").trim();
+const ORDER=SITE.ordering.enabled&&!SQUARE; // built-in cart only when no Square link
 const esc=s=>String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
 const REG={}; let regN=0;
 const reg=it=>{const k="i"+(regN++);REG[k]=it;return k};
@@ -660,24 +707,33 @@ $("#footContact").textContent=SITE.phone+"  ·  "+SITE.email;
 $("#yr").textContent=new Date().getFullYear();
 $("#menuToggle").onclick=()=>$("#links").classList.toggle("open");
 document.querySelectorAll("#links a").forEach(a=>a.addEventListener("click",()=>$("#links").classList.remove("open")));
-if(!ORDER)document.querySelectorAll(".order-link,.order-only").forEach(e=>e.remove());
+if(SITE.ordering.enabled&&SQUARE){
+  document.querySelectorAll(".order-link").forEach(a=>{a.href=SQUARE;a.target="_blank";a.rel="noopener"});
+  const c=$("#squareCta");c.href=SQUARE;c.style.display="flex";
+  document.querySelectorAll(".order-only").forEach(e=>e.remove());
+}else if(!ORDER)document.querySelectorAll(".order-link,.order-only").forEach(e=>e.remove());
 
 /* ticker */
 const words=["Custom dogs","Loaded nachos","Pork parfait","Lemon shake-ups","Chicken tenders","Veggie dogs","Fried tilapia","Combos from $10","Book us for events"];
 $("#ticker").innerHTML=[...words,...words].map(w=>`<span>${w}<i>★</i></span>`).join("");
 
-/* special */
-const ALL=[...SIGNATURE,...COMBOS,...CHICKEN,...MORE,...SIDES];
-const sp=ALL.find(i=>i.name===SITE.itemOfMonth.ref)||SIGNATURE[0];
-$("#spTag").textContent=SITE.itemOfMonth.month.toUpperCase()+" ITEM OF THE MONTH";
-$("#spName").textContent=sp.name;
-$("#spDesc").textContent=SITE.itemOfMonth.blurb||sp.desc;
-$("#spPrice").textContent="$"+sp.price;
-if(sp.img){$("#spImg").src=sp.img;$("#spImg").alt=sp.name}
-if(ORDER)$("#spAdd").onclick=()=>openCz(sp);
 
 /* menu render */
-$("#dogTypes").innerHTML=DOGS.map(d=>`<div class="dog-type"><h4>${d}</h4><small>${d==="Veggie Dog"?"plant-based option":"jumbo and juicy"}</small></div>`).join("");
+const K=SITE.kasantu||{dishes:[],spots:0};
+const KDISH=(K.dishes||[]).filter(d=>d&&d.name);
+$("#kIntro").textContent=K.intro||"";
+$("#kList").innerHTML=KDISH.map(d=>`<div class="k-dish">${d.img?`<img src="${d.img}" alt="${esc(d.name)}" loading="lazy">`:""}<div class="kb"><div class="kt"><h4>${d.name}</h4>${d.price!=null?`<span class="ptag sm">$${d.price}</span>`:""}</div>${d.desc?`<p>${d.desc}</p>`:""}${addBtn(d)}</div></div>`).join("")
+  +Array.from({length:Math.max(0,(K.spots||0)-KDISH.length)},()=>`<div class="k-soon"><b>Coming soon</b><span>A new West African dish is on the way</span></div>`).join("");
+let selType=null;
+$("#dogTypes").innerHTML=DOGS.map(d=>`<button type="button" class="dog-type" data-dog="${esc(d)}"><h4>${d}</h4><small>${d==="Veggie Dog"?"plant-based option":"jumbo and juicy"}</small></button>`).join("");
+$("#dogTypes").addEventListener("click",e=>{
+  const b=e.target.closest(".dog-type");if(!b)return;
+  selType=b.dataset.dog;
+  document.querySelectorAll("#dogTypes .dog-type").forEach(x=>x.classList.toggle("sel",x===b));
+  setStyles("all");
+  $("#dropCount").textContent="Now pick a style for your "+selType;
+  setTimeout(()=>$("#styleDrop").scrollIntoView({behavior:"smooth",block:"start"}),60);
+});
 $("#sigGrid").innerHTML=SIGNATURE.map(d=>`<div class="sig">
   <div class="sig-photo">${d.spicy?'<span class="spicy">🔥 SPICY</span>':""}<span class="ptag">$${d.price}</span><img src="${d.img}" alt="${esc(d.name)}" loading="lazy"></div>
   <div class="sig-body"><h4>${d.name}</h4><p>${d.desc}</p>
@@ -709,7 +765,7 @@ $("#peekStrip").addEventListener("click",pickName);
 $("#peekStrip").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pickName(e)}});
 $("#tchips").innerHTML=TOPPINGS.map(t=>`<span>${t}</span>`).join("");
 $("#comboList").innerHTML=COMBOS.map(c=>`<div class="combo"><div class="n">${c.n}</div>
-  <div><h4>${c.desc}</h4><small>${c.sub}</small>${addBtn(c,"Customize")}</div><span class="ptag red">$${c.price}</span></div>`).join("");
+  <div><h4>${c.either?c.desc+" + your pick:":c.desc}</h4>${c.either?`<div class="either"><span>Chips + a drink</span><i>OR</i><span>Fries (no drink)</span></div>`:""}<small>${c.sub}</small>${addBtn(c,"Customize")}</div><span class="ptag red">$${c.price}</span></div>`).join("");
 const rows=list=>list.map(m=>`<div class="row-item">${m.img?`<img class="thumb" src="${m.img}" alt="" loading="lazy">`:`<div class="thumb blank">${m.icon||"🌭"}</div>`}
   <div><h4>${m.name}</h4><p>${m.desc}</p>${addBtn(m)}</div><span class="ptag">$${m.price}</span></div>`).join("");
 $("#moreList").innerHTML=rows(MORE);
@@ -728,7 +784,7 @@ function openCz(it){
   $("#czTitle").textContent=it.name;$("#czDesc").textContent=it.desc;
   $("#czImg").style.display=it.img?"block":"none";if(it.img)$("#czImg").src=it.img;
   let h="";
-  if(it.pick)h+=group("Pick your dog",it.pick.map((p,i)=>chip("radio","czPick",p,i===0)).join(""));
+  if(it.pick){const def=it.pick.includes(selType)?selType:it.pick[0];h+=group(it.kind==="dog"?"Pick your dog":"Choose one",it.pick.map(p=>chip("radio","czPick",p,p===def)).join(""))}
   if(it.styles)h+=group("Pick your style",["Build my own",...SIGNATURE.map(s=>s.name)].map((p,i)=>chip("radio","czStyle",p,i===0)).join(""));
   (it.groups||[]).forEach((g,gi)=>{h+=group(g.label,g.choices.map(([n,a],i)=>chip("radio","czG"+gi,n,i===0,"",n+(a?` (+$${a})`:""))).join(""))});
   if(it.styles)h+=`<div id="czStyleGroups"></div>`;
@@ -773,7 +829,7 @@ function czCalc(){
   }else cz.extraMsg="";
   (it.groups||[]).forEach((g,gi)=>{
     if(it.kind==="dog"&&!it.styles)return; // dog's own groups handled above
-    const v=vals("czG"+gi)[0];if(!v)return;const c=g.choices.find(x=>x[0]===v);p+=c[1];d.push(g.label.toLowerCase().startsWith("choose")?v:`${g.label.toLowerCase()}: ${v}`);
+    const v=vals("czG"+gi)[0];if(!v)return;const c=g.choices.find(x=>x[0]===v);p+=c[1];d.push(/^(choose|comes)/i.test(g.label)?v:`${g.label.toLowerCase()}: ${v}`);
   });
   if(it.sauces!==undefined){const s=vals("czSauce");p+=Math.max(0,s.length-it.sauces)*.5;if(s.length)d.push("sauces: "+s.join(", "))}
   if(vals("czMeal").length){p+=4;d.push("meal w/ fries + drink")}
