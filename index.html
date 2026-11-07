@@ -756,14 +756,17 @@ else $("#kSlot").innerHTML=K.name
   ?`<div class="k-dish">${K.img?`<img src="${K.img}" alt="${esc(K.name)}" loading="lazy">`:""}<div class="kb"><h4>${K.name}</h4>${K.price!=null?`<span class="ptag sm">$${K.price}</span>`:""}${K.desc?`<p>${K.desc}</p>`:""}${addBtn({name:K.name,price:K.price||0})}</div></div>`
   :`<div class="k-soon"><b>Coming soon</b>West African specials. Ask at the window!</div>`;
 let selType=null;
+function updateDropLabel(){
+  const open=$("#styleDrop").classList.contains("open");
+  $("#dropCount").textContent=selType?(open?"Your "+selType+" · tap to close":"Pick a style for your "+selType):(open?"Tap to close":"Tap to see all 13");
+}
 $("#dogTypes").innerHTML=DOGS.map(d=>`<button type="button" class="dog-type" data-dog="${esc(d)}"><h4>${d}</h4><small>${d==="Veggie Dog"?"plant-based option":"jumbo and juicy"}</small></button>`).join("");
 $("#dogTypes").addEventListener("click",e=>{
   const b=e.target.closest(".dog-type");if(!b)return;
-  selType=b.dataset.dog;
-  document.querySelectorAll("#dogTypes .dog-type").forEach(x=>x.classList.toggle("sel",x===b));
-  setStyles("all");
-  $("#dropCount").textContent="Now pick a style for your "+selType;
-  setTimeout(()=>$("#styleDrop").scrollIntoView({behavior:"smooth",block:"start"}),60);
+  selType=selType===b.dataset.dog?null:b.dataset.dog;
+  document.querySelectorAll("#dogTypes .dog-type").forEach(x=>{x.classList.toggle("sel",x.dataset.dog===selType);x.setAttribute("aria-pressed",x.dataset.dog===selType)});
+  updateDropLabel();
+  if(selType)toast(selType+" selected. Now pick a style");
 });
 $("#sigGrid").innerHTML=SIGNATURE.map(d=>`<div class="sig">
   <div class="sig-photo">${d.spicy?'<span class="spicy">🔥 SPICY</span>':""}<span class="ptag">$${d.price}</span><img src="${d.img}" alt="${esc(d.name)}" loading="lazy"></div>
@@ -780,7 +783,7 @@ function setStyles(mode,i){
   const dd=$("#styleDrop"),open=mode!=="closed";
   dd.classList.toggle("open",open);dd.classList.toggle("all",mode==="all");dd.classList.toggle("one",mode==="one");
   $("#styleToggle").setAttribute("aria-expanded",open);
-  $("#dropCount").textContent=open?"Tap to close":"Tap to see all 13";
+  updateDropLabel();
   selDog=mode==="one"?i:-1;
   document.querySelectorAll("#peekStrip span").forEach(s=>s.classList.toggle("sel",+s.dataset.i===selDog));
   if(mode==="one"){
