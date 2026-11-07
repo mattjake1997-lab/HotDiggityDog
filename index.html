@@ -265,6 +265,8 @@ button.dog-type.sel h4::after{content:" ✓";color:var(--red)}
 .either i{font-style:normal;font-family:Bangers,Impact,sans-serif;color:var(--red);font-size:1.1rem;letter-spacing:1px}
 .tab-special{border-color:var(--green)!important;color:var(--green)!important}
 .tab-special.active{background:var(--green)!important;color:#fff!important;box-shadow:0 4px 0 var(--green-dark)!important}
+.limited{display:inline-block;margin-top:6px;background:#FFF1D0;color:var(--red-dark);border:2px dashed var(--red);border-radius:999px;padding:5px 12px;font-weight:900;font-size:.82rem}
+.lim-note{font-size:.78rem!important;margin:6px 0 0!important}
 /* gallery */
 .gallery{background:var(--ink);color:#fff;position:relative;overflow:hidden}
 .gallery .section-head h2{color:var(--yellow)}
@@ -389,7 +391,8 @@ const SITE = {
     name: "Peanut Sauce Chicken",
     price: 10,
     desc: "Served over white rice",
-    img: "img/peanut-chicken.jpg"
+    img: "img/peanut-chicken.jpg",
+    limited: true   // true = shows "Limited · Ask at the window" instead of an Add button
   },
 
   // WHERE WE'LL BE: edit weekly
@@ -452,10 +455,10 @@ const WING_SAUCE = {label:"Sauce", choices:[["Red Hot",0],["Sweet n Spicy",0],["
 const SPECIALS = [
   {on:true, name:"Boneless Wings (6 pc)", price:7, img:"img/wings.jpg", groups:[WING_SAUCE], desc:"Tossed in Red Hot, Sweet n Spicy, or BBQ"},
   {on:true, name:"Bone-In Wings (5 pc)", price:10, img:"img/wings.jpg", groups:[WING_SAUCE], desc:"Tossed in Red Hot, Sweet n Spicy, or BBQ"},
+  {on:true, name:"Chicken Drumsticks (3 pc)", price:7, img:"img/wings.jpg", desc:"Three crispy, seasoned drumsticks"},
+  {on:true, name:"Chicken Drumsticks (5 pc)", price:9, img:"img/wings.jpg", desc:"Five crispy, seasoned drumsticks"},
 ];
 const CHICKEN = [
-  {name:"Chicken Drumsticks (3 pc)", price:7, img:"img/wings.jpg", sauces:0, meal:true, desc:"Three crispy, seasoned drumsticks"},
-  {name:"Chicken Drumsticks (5 pc)", price:9, img:"img/wings.jpg", sauces:0, meal:true, desc:"Five crispy, seasoned drumsticks"},
   {name:"Chicken Tenders (3 pc)", price:7, sauces:2, meal:true, desc:"Comes with 2 sauces", icon:"🍗"},
   {name:"Chicken Tenders (5 pc)", price:9, sauces:3, meal:true, desc:"Comes with 3 sauces", icon:"🍗"},
   {name:"BBQ Pulled Pork or Chicken Sandwich", price:8, groups:[PROTEIN], tops:["Pickles","Diced onions"], meal:true, desc:"BBQ pulled pork or chicken topped with pickles and diced onions", icon:"🥪"},
@@ -761,7 +764,8 @@ const reg=it=>{const k="i"+(regN++);REG[k]=it;return k};
 let cart=[];
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),1600)}
 const canCustomize=it=>!!(it.pick||it.tops||it.groups||it.kind||it.meal||it.sauces!==undefined);
-const addBtn=(it,label)=>ORDER?`<button class="btn ${canCustomize(it)?"btn-light":"btn-red"} btn-sm add" data-k="${reg(it)}">${label||(canCustomize(it)?"Customize":"Add")}</button>`:"";
+const LIMITED_TAG=`<span class="limited">⏳ Limited · Ask at the window</span>`;
+const addBtn=(it,label)=>it.limited?LIMITED_TAG:ORDER?`<button class="btn ${canCustomize(it)?"btn-light":"btn-red"} btn-sm add" data-k="${reg(it)}">${label||(canCustomize(it)?"Customize":"Add")}</button>`:"";
 
 /* contact + basics */
 $("#telLink").href="tel:"+SITE.phoneDigits;$("#telLink").textContent=SITE.phone;
@@ -786,7 +790,7 @@ $("#ticker").innerHTML=[...words,...words].map(w=>`<span>${w}<i>★</i></span>`)
 const K=SITE.kasantu||{};
 if(K.show===false)$("#kasantu").remove();
 else $("#kSlot").innerHTML=K.name
-  ?`<div class="k-dish">${K.img?`<img src="${K.img}" alt="${esc(K.name)}" loading="lazy">`:""}<div class="kb"><h4>${K.name}</h4>${K.price!=null?`<span class="ptag sm">$${K.price}</span>`:""}${K.desc?`<p>${K.desc}</p>`:""}${addBtn({name:K.name,price:K.price||0})}</div></div>`
+  ?`<div class="k-dish">${K.img?`<img src="${K.img}" alt="${esc(K.name)}" loading="lazy">`:""}<div class="kb"><h4>${K.name}</h4>${K.price!=null?`<span class="ptag sm">$${K.price}</span>`:""}${K.desc?`<p>${K.desc}</p>`:""}${addBtn({name:K.name,price:K.price||0,limited:K.limited})}${K.limited?`<p class="lim-note">Seasonal or limited. Ask at the window if it's available today.</p>`:""}</div></div>`
   :`<div class="k-soon"><b>Coming soon</b>West African specials. Ask at the window!</div>`;
 const kMQ=matchMedia("(max-width:760px)");
 function placeKasantu(){const k=$("#kasantu");if(!k)return;
