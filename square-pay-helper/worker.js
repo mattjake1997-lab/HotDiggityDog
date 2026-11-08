@@ -96,18 +96,23 @@ export default {
       const phone = digits.length === 10 ? "+1" + digits : undefined;
       const num = String(d.num || "").slice(0, 40);
       const site = env.SITE_URL || "";
+      const custName = String(d.name || "Customer").slice(0, 60);
+      const label = ("#" + num + " " + custName).slice(0, 30);   // what shows on the tablet
+      const customerId = await findOrCreateCustomer(env, custName, phone).catch(() => null);
 
       const body = {
         idempotency_key: crypto.randomUUID(),
         order: {
           location_id: env.SQUARE_LOCATION_ID,
           reference_id: num,
+          ticket_name: label,
+          ...(customerId ? { customer_id: customerId } : {}),
           line_items,
           fulfillments: [{
             type: "PICKUP",
             state: "PROPOSED",
             pickup_details: {
-              recipient: { display_name: String(d.name || "Customer").slice(0, 100), ...(phone ? { phone_number: phone } : {}) },
+              recipient: { display_name: label, ...(customerId ? { customer_id: customerId } : {}), ...(phone ? { phone_number: phone } : {}) },
               schedule_type: "ASAP",
               note: ("Website order #" + num + (d.notes ? " · " + d.notes : "")).slice(0, 500),
             },
@@ -138,6 +143,37 @@ export default {
     }
   },
 };
+
+// Finds the customer in his Square customer list by phone, or adds them,
+// so the order shows the customer's name on the tablet.
+async function findOrCreateCustomer(env, name, phone) {
+  const h = {
+    "Authorization": "Bearer " + env.SQUARE_ACCESS_TOKEN,
+    "Square-Version": SQUARE_VERSION,
+    "Content-Type": "application/json",
+  };
+  if (phone) {
+    const sr = await fetch("https://connect.squareup.com/v2/customers/search", {
+      method: "POST", headers: h,
+      body: JSON.stringify({ limit: 1, query: { filter: { phone_number: { exact: phone } } } }),
+    });
+    const sj = await sr.json();
+    if (sj.customers && sj.customers[0]) return sj.customers[0].id;
+  }
+  const [given, ...rest] = name.trim().split(/\s+/);
+  const cr = await fetch("https://connect.squareup.com/v2/customers", {
+    method: "POST", headers: h,
+    body: JSON.stringify({
+      idempotency_key: crypto.randomUUID(),
+      given_name: given || "Customer",
+      ...(rest.length ? { family_name: rest.join(" ") } : {}),
+      ...(phone ? { phone_number: phone } : {}),
+      note: "Added from hotdiggitydogtruck.com order",
+    }),
+  });
+  const cj = await cr.json();
+  return cj.customer ? cj.customer.id : null;
+}
 
 function json(o, status, headers) {
   return new Response(JSON.stringify(o), { status, headers: { ...headers, "Content-Type": "application/json" } });
