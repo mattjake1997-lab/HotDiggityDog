@@ -22,51 +22,53 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 const MENU_SHEET = "Menu";
 const STATUS_CHOICES = ["ORDER ONLINE", "ASK AT WINDOW", "HIDE"];
 // Which part of the website a NEW item shows up in.
-const SECTION_CHOICES = ["Hot dog styles", "Chicken & sandwiches", "Nachos & fries", "Combos", "Sides & drinks", "Specials (wings sign)", "West African"];
+// These match the tabs on the website menu.
+const SECTION_CHOICES = ["Custom Dogs", "Chicken and Sandwiches", "Nachos and Fries", "Combos", "Sides and Drinks", "West African Cuisine", "Specials"];
+const OLD_SECTIONS = {"Hot dog styles": "Custom Dogs", "Chicken & sandwiches": "Chicken and Sandwiches", "Nachos & fries": "Nachos and Fries", "Sides & drinks": "Sides and Drinks", "Specials (wings sign)": "Specials", "West African": "West African Cuisine"};
 const MENU_DEFAULT = [
-  ["Hot dog styles", "Firecracker", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "South of the Border", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "Fiery Diggity", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "Sweet & Spicy", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "Spanish Dog", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "Chili Cheese Dog", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "Cali Dog", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "Everything Dog", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "Taco Dog", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "German Dog", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "Chicago Dog", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "BLT Dog", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "Street Dog", 7, "ORDER ONLINE"],
-  ["Hot dog styles", "Build Your Own Dog", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "Firecracker", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "South of the Border", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "Fiery Diggity", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "Sweet & Spicy", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "Spanish Dog", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "Chili Cheese Dog", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "Cali Dog", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "Everything Dog", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "Taco Dog", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "German Dog", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "Chicago Dog", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "BLT Dog", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "Street Dog", 7, "ORDER ONLINE"],
+  ["Custom Dogs", "Build Your Own Dog", 7, "ORDER ONLINE"],
   ["Combos", "Any Hot Dog Combo", 10, "ORDER ONLINE"],
   ["Combos", "Crispy Chicken Sandwich Combo", 11, "ASK AT WINDOW"],
   ["Combos", "BBQ Sandwich Combo", 11, "ORDER ONLINE"],
   ["Combos", "Mozzarella Sticks Combo", 12, "ORDER ONLINE"],
   ["Combos", "Any Dog + Lemon Shake-Up", 12, "ASK AT WINDOW"],
-  ["Chicken & sandwiches", "Chicken Tenders (3 pc)", 7, "ORDER ONLINE"],
-  ["Chicken & sandwiches", "Chicken Tenders (5 pc)", 9, "ORDER ONLINE"],
-  ["Chicken & sandwiches", "BBQ Pulled Pork or Chicken Sandwich", 8, "ORDER ONLINE"],
-  ["Chicken & sandwiches", "Crispy Chicken Sandwich", 8, "ASK AT WINDOW"],
-  ["Chicken & sandwiches", "Corn Dog", 7, "ORDER ONLINE"],
-  ["Chicken & sandwiches", "Pork Parfait", 9, "ASK AT WINDOW"],
-  ["Nachos & fries", "Loaded Nachos", 10, "ORDER ONLINE"],
-  ["Nachos & fries", "Regular Nachos", 7, "ORDER ONLINE"],
-  ["Nachos & fries", "Chili Cheese Fries", 7, "ORDER ONLINE"],
-  ["Nachos & fries", "Loaded Fries", 10, "ORDER ONLINE"],
-  ["Sides & drinks", "Fries", 4, "ORDER ONLINE"],
-  ["Sides & drinks", "Chips", 2, "ORDER ONLINE"],
-  ["Sides & drinks", "Coleslaw", 2, "ORDER ONLINE"],
-  ["Sides & drinks", "Mozzarella Sticks (6 pc)", 7, "ORDER ONLINE"],
-  ["Sides & drinks", "Side of Cheese Sauce", 2, "ORDER ONLINE"],
-  ["Sides & drinks", "Side of Chili Sauce", 2, "ORDER ONLINE"],
-  ["Sides & drinks", "Drink", 2, "ORDER ONLINE"],
-  ["Sides & drinks", "Lemon Shake-Up (24 oz)", 7, "ASK AT WINDOW"],
-  ["Sides & drinks", "Lemon Shake-Up Refill", 4, "ASK AT WINDOW"],
-  ["Specials (wings sign)", "Boneless Wings (6 pc)", 7, "HIDE"],
-  ["Specials (wings sign)", "Bone-In Wings (5 pc)", 10, "HIDE"],
-  ["Specials (wings sign)", "Chicken Drumsticks (3 pc)", 7, "HIDE"],
-  ["Specials (wings sign)", "Chicken Drumsticks (5 pc)", 9, "HIDE"],
-  ["West African", "Peanut Sauce Chicken", 10, "ASK AT WINDOW"]
+  ["Chicken and Sandwiches", "Chicken Tenders (3 pc)", 7, "ORDER ONLINE"],
+  ["Chicken and Sandwiches", "Chicken Tenders (5 pc)", 9, "ORDER ONLINE"],
+  ["Chicken and Sandwiches", "BBQ Pulled Pork or Chicken Sandwich", 8, "ORDER ONLINE"],
+  ["Chicken and Sandwiches", "Crispy Chicken Sandwich", 8, "ASK AT WINDOW"],
+  ["Chicken and Sandwiches", "Corn Dog", 7, "ORDER ONLINE"],
+  ["Chicken and Sandwiches", "Pork Parfait", 9, "ASK AT WINDOW"],
+  ["Nachos and Fries", "Loaded Nachos", 10, "ORDER ONLINE"],
+  ["Nachos and Fries", "Regular Nachos", 7, "ORDER ONLINE"],
+  ["Nachos and Fries", "Chili Cheese Fries", 7, "ORDER ONLINE"],
+  ["Nachos and Fries", "Loaded Fries", 10, "ORDER ONLINE"],
+  ["Sides and Drinks", "Fries", 4, "ORDER ONLINE"],
+  ["Sides and Drinks", "Chips", 2, "ORDER ONLINE"],
+  ["Sides and Drinks", "Coleslaw", 2, "ORDER ONLINE"],
+  ["Sides and Drinks", "Mozzarella Sticks (6 pc)", 7, "ORDER ONLINE"],
+  ["Sides and Drinks", "Side of Cheese Sauce", 2, "ORDER ONLINE"],
+  ["Sides and Drinks", "Side of Chili Sauce", 2, "ORDER ONLINE"],
+  ["Sides and Drinks", "Drink", 2, "ORDER ONLINE"],
+  ["Sides and Drinks", "Lemon Shake-Up (24 oz)", 7, "ASK AT WINDOW"],
+  ["Sides and Drinks", "Lemon Shake-Up Refill", 4, "ASK AT WINDOW"],
+  ["Specials", "Boneless Wings (6 pc)", 7, "HIDE"],
+  ["Specials", "Bone-In Wings (5 pc)", 10, "HIDE"],
+  ["Specials", "Chicken Drumsticks (3 pc)", 7, "HIDE"],
+  ["Specials", "Chicken Drumsticks (5 pc)", 9, "HIDE"],
+  ["West African Cuisine", "Peanut Sauce Chicken", 10, "ASK AT WINDOW"]
 ];
 
 // The "Settings" tab: the owner changes these from the Google Sheets app.
@@ -232,21 +234,27 @@ function setupMenu_() {
   if (!sh) sh = ss.insertSheet(MENU_SHEET);
   if (isNew || sh.getLastRow() < 2) {
     sh.clear();
-    sh.appendRow(["Section", "Item (don't change the name)", "Price", "Online status", "Description (new items only)"]);
+    sh.appendRow(["Section (website tab)", "Item (don't change the name)", "Price", "Online status", "Description (new items only)"]);
     sh.getRange(2, 1, MENU_DEFAULT.length, 4).setValues(MENU_DEFAULT);
   } else {
     // Add any new items that aren't in his sheet yet, without touching his changes.
     const have = new Set(sh.getRange(2, 2, sh.getLastRow() - 1, 1).getDisplayValues().map(r => String(r[0]).trim()));
     MENU_DEFAULT.filter(r => !have.has(r[1])).forEach(r => sh.appendRow(r));
   }
+  sh.getRange(1, 1).setValue("Section (website tab)");
   sh.getRange(1, 5).setValue("Description (new items only)");
+  // Rename old section names to match the website tabs
+  if (sh.getLastRow() > 1) {
+    const secR = sh.getRange(2, 1, sh.getLastRow() - 1, 1);
+    secR.setValues(secR.getValues().map(r => [OLD_SECTIONS[r[0]] || r[0]]));
+  }
   sh.getRange(1, 1, 1, 5).setFontWeight("bold").setBackground("#1F6B57").setFontColor("#FFFFFF");
   sh.setFrozenRows(1);
   const n = sh.getLastRow() - 1;
   sh.getRange(2, 3, n, 1).setNumberFormat("$0.00");
   sh.getRange(2, 4, n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_CHOICES, true).build());
   const rng = sh.getRange(2, 1, Math.max(n, 1) + 50, 5);
-  sh.getRange(2, 1, n + 50, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(SECTION_CHOICES, true).setAllowInvalid(true).build());
+  sh.getRange(2, 1, n + 50, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(SECTION_CHOICES, true).setAllowInvalid(false).build());
   // New rows he types at the bottom also get the dropdown
   sh.getRange(2, 4, n + 50, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_CHOICES, true).build());
   sh.getRange(2, 3, n + 50, 1).setNumberFormat("$0.00");
@@ -306,11 +314,13 @@ function setupHowTo_() {
     ["", ""],
     ["➕ ADD A NEW ITEM YOURSELF", "head"],
     ["1. Go to the MENU tab and scroll to the first empty row at the bottom.", ""],
-    ["2. Section: pick where it goes on the website (Hot dog styles, Combos, Sides & drinks...).", ""],
-    ["3. Type the item name in the Item column (example: Mac & Cheese Dog).", ""],
+    ["2. Section: pick the website tab it goes in (Custom Dogs, Combos, Sides and Drinks...).", ""],
+    ["3. Type the item name in the Item column (example: Mac and Cheese Dog).", ""],
     ["4. Type the price. Pick ORDER ONLINE or ASK AT WINDOW.", ""],
-    ["5. (Optional) Type a short description in the last column.", ""],
-    ["6. Reload the website. It shows in the section you picked.", ""],
+    ["5. Description (last column): a few words about it.", ""],
+    ["   For a Custom Dog, list the toppings with commas: Mac and cheese, Bacon bits, Green onions", "note"],
+    ["6. Reload the website. It shows in that tab with a NEW tag.", ""],
+    ["   A new Custom Dog works like the others: people pick their dog and can remove or add toppings.", "note"],
     ["   It won't have a photo or choices. Tell Matt if you want it added the full way.", "note"],
     ["   Printed menus and signs don't change by themselves. Ask Matt for new ones.", "note"],
     ["", ""],
