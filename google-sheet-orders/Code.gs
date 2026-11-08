@@ -21,6 +21,8 @@ const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 // The "Menu" tab: he changes prices and what can be ordered online.
 const MENU_SHEET = "Menu";
 const STATUS_CHOICES = ["ORDER ONLINE", "ASK AT WINDOW", "HIDE"];
+// Which part of the website a NEW item shows up in.
+const SECTION_CHOICES = ["Hot dog styles", "Chicken & sandwiches", "Nachos & fries", "Combos", "Sides & drinks", "Specials (wings sign)", "West African"];
 const MENU_DEFAULT = [
   ["Hot dog styles", "Firecracker", 7, "ORDER ONLINE"],
   ["Hot dog styles", "South of the Border", 7, "ORDER ONLINE"],
@@ -216,7 +218,7 @@ function doGet() {
     const mn = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(MENU_SHEET);
     if (mn && mn.getLastRow() > 1) {
       mn.getRange(2, 1, mn.getLastRow() - 1, 5).getDisplayValues().forEach(([section, item, price, status, desc]) => {
-        if (String(item).trim()) menu.push({ item: item, price: price, status: status, desc: desc });
+        if (String(item).trim()) menu.push({ section: section, item: item, price: price, status: status, desc: desc });
       });
     }
   } catch (e) {}
@@ -244,6 +246,7 @@ function setupMenu_() {
   sh.getRange(2, 3, n, 1).setNumberFormat("$0.00");
   sh.getRange(2, 4, n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_CHOICES, true).build());
   const rng = sh.getRange(2, 1, Math.max(n, 1) + 50, 5);
+  sh.getRange(2, 1, n + 50, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(SECTION_CHOICES, true).setAllowInvalid(true).build());
   // New rows he types at the bottom also get the dropdown
   sh.getRange(2, 4, n + 50, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_CHOICES, true).build());
   sh.getRange(2, 3, n + 50, 1).setNumberFormat("$0.00");
@@ -303,10 +306,11 @@ function setupHowTo_() {
     ["", ""],
     ["➕ ADD A NEW ITEM YOURSELF", "head"],
     ["1. Go to the MENU tab and scroll to the first empty row at the bottom.", ""],
-    ["2. Type the item name in the Item column (example: Mac & Cheese).", ""],
-    ["3. Type the price. Pick ORDER ONLINE or ASK AT WINDOW.", ""],
-    ["4. (Optional) Type a short description in the last column.", ""],
-    ["5. It shows on the website under \"Also on the menu\" in the Nachos and Fries section.", ""],
+    ["2. Section: pick where it goes on the website (Hot dog styles, Combos, Sides & drinks...).", ""],
+    ["3. Type the item name in the Item column (example: Mac & Cheese Dog).", ""],
+    ["4. Type the price. Pick ORDER ONLINE or ASK AT WINDOW.", ""],
+    ["5. (Optional) Type a short description in the last column.", ""],
+    ["6. Reload the website. It shows in the section you picked.", ""],
     ["   It won't have a photo or choices. Tell Matt if you want it added the full way.", "note"],
     ["   Printed menus and signs don't change by themselves. Ask Matt for new ones.", "note"],
     ["", ""],
