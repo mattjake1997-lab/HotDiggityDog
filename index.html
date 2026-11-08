@@ -275,6 +275,7 @@ button.dog-type.sel h4::after{content:" ✓";color:var(--red)}
 .today-when{font-weight:700;color:var(--muted);margin-bottom:10px}
 .closed-banner{max-width:720px;margin:-6px auto 24px;background:var(--ink);color:var(--yellow);border-radius:16px;padding:12px 18px;text-align:center;font-weight:900}
 body.ordering-closed .add,body.ordering-closed #byoAdd,body.ordering-closed .cart-fab,body.ordering-closed .order-link{display:none!important}
+body.ordering-closed .limited,body.ordering-closed .lim-s,body.ordering-closed .lim-key,body.ordering-closed .lim-note{display:none!important}
 /* gallery */
 .gallery{background:var(--ink);color:#fff;position:relative;overflow:hidden}
 .gallery .section-head h2{color:var(--yellow)}
@@ -1054,8 +1055,9 @@ if(SHEET&&ORDER){
     const s=j&&j.settings;if(!s)return;
     if(s.onlineOrdering!==undefined&&!yes(s.onlineOrdering)){
       document.body.classList.add("ordering-closed");
-      const b=$("#closedBanner");b.textContent=s.closedMessage||"Online ordering is closed right now. Come see us at the window!";b.style.display="block";
-      $("#menuSub").textContent="Here's our menu. Order at the window.";
+      const msg=String(s.closedMessage||"").trim();
+      if(msg){const b=$("#closedBanner");b.textContent=msg;b.style.display="block"}
+      $("#menuSub").textContent="Here's our menu.";
     }
     if(s.payNow!==undefined&&!yes(s.payNow)&&$("#payChoice")){
       $("#payChoice").style.display="none";
