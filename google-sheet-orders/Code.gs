@@ -43,6 +43,7 @@ function setup() {
   sh.getRange("F:F").setWrap(true);
   setupSettings_();
   setupWeek_();
+  getEventSheet_();
   // Ask once for email permission so new-order emails work.
   if (NOTIFY_EMAIL) MailApp.getRemainingDailyQuota();
 }
@@ -75,7 +76,7 @@ function doPost(e) {
 
 /** Saves an event booking request to the "Event Requests" tab. */
 const EVENT_SHEET = "Event Requests";
-function saveEvent_(d) {
+function getEventSheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(EVENT_SHEET);
   if (!sh) {
@@ -88,6 +89,11 @@ function saveEvent_(d) {
     sh.setColumnWidth(7, 380);
     sh.getRange("G:G").setWrap(true);
   }
+  return sh;
+}
+
+function saveEvent_(d) {
+  const sh = getEventSheet_();
   sh.appendRow([new Date(), "NEW", clean_(d.name), "'" + clean_(d.phone), clean_(d.date),
                 clean_(d.guests || "not sure"), clean_(d.details || "")]);
   if (NOTIFY_EMAIL) {
