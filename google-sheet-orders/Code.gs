@@ -53,6 +53,7 @@ function doPost(e) {
   lock.waitLock(15000);
   try {
     const d = JSON.parse(e.postData.contents);
+    if (d.type === "event") return saveEvent_(d);
     const sh = getSheet_();
     const num = FIRST_ORDER_NUMBER + Math.max(0, sh.getLastRow() - 1);
     const items = (d.items || []).map(String).join("\n");
@@ -70,6 +71,32 @@ function doPost(e) {
   } finally {
     lock.releaseLock();
   }
+}
+
+/** Saves an event booking request to the "Event Requests" tab. */
+const EVENT_SHEET = "Event Requests";
+function saveEvent_(d) {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(EVENT_SHEET);
+  if (!sh) {
+    sh = ss.insertSheet(EVENT_SHEET);
+    sh.appendRow(["Received", "Status", "Name", "Phone", "Event date", "Guests", "Details"]);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, 7).setFontWeight("bold").setBackground("#F2711C").setFontColor("#FFFFFF");
+    sh.getRange("B2:B").setDataValidation(SpreadsheetApp.newDataValidation()
+      .requireValueInList(["NEW", "CALLED", "BOOKED", "DECLINED"], true).build());
+    sh.setColumnWidth(7, 380);
+    sh.getRange("G:G").setWrap(true);
+  }
+  sh.appendRow([new Date(), "NEW", clean_(d.name), "'" + clean_(d.phone), clean_(d.date),
+                clean_(d.guests || "not sure"), clean_(d.details || "")]);
+  if (NOTIFY_EMAIL) {
+    MailApp.sendEmail(NOTIFY_EMAIL, "🎉 Event request – " + clean_(d.name) + " (" + clean_(d.date) + ")",
+      "Event booking request\nName: " + clean_(d.name) + "\nPhone: " + clean_(d.phone) +
+      "\nDate: " + clean_(d.date) + "\nGuests: " + clean_(d.guests || "not sure") +
+      "\nDetails: " + clean_(d.details || "-"));
+  }
+  return json_({ ok: true });
 }
 
 /** The website reads the Settings tab through this. */

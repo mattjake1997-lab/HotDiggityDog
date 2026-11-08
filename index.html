@@ -1090,14 +1090,29 @@ $("#newOrderBtn").onclick=()=>{closeOverlay();document.querySelector("#menu").sc
 
 /* booking */
 $("#bookForm").addEventListener("input",()=>$("#bErr").textContent="");
-$("#bookForm").onsubmit=e=>{
+$("#bookForm").onsubmit=async e=>{
   e.preventDefault();
   const n=$("#bName").value.trim(),p=$("#bPhone").value.trim(),d=$("#bDate").value;
   if(!n){$("#bErr").textContent="Enter your name";return}
   if(!p){$("#bErr").textContent="Enter a phone number so we can call you back";return}
   if(!d){$("#bErr").textContent="Pick your event date";return}
-  const body=`Event request\nName: ${n}\nPhone: ${p}\nDate: ${d}\nGuests: ${$("#bGuests").value||"not sure"}\nDetails: ${$("#bNote").value.trim()||"-"}`;
-  $("#bOut").innerHTML=`<p style="font-weight:900;margin:0 0 6px">Your request is ready. Send it to ${SITE.email}:</p><div class="order-text">${esc(body)}</div>
+  const guests=$("#bGuests").value||"",details=$("#bNote").value.trim();
+  const btn=$("#bookForm button[type=submit]"),label=btn.textContent;
+  if(SHEET){
+    btn.textContent="Sending…";btn.disabled=true;
+    try{
+      const r=await fetch(SHEET,{method:"POST",body:JSON.stringify({type:"event",name:n,phone:p,date:d,guests,details})});
+      const j=await r.json();
+      if(j&&j.ok){
+        $("#bookForm").reset();btn.textContent=label;btn.disabled=false;
+        $("#bOut").innerHTML=`<div class="order-num" style="margin:0">🎉 Request sent!<small style="display:block;margin-top:4px">Thanks, ${esc(n)}. We'll call you at ${esc(p)} soon to talk about your event.</small></div>`;
+        return;
+      }
+    }catch(err){}
+    btn.textContent=label;btn.disabled=false;
+  }
+  const body=`Event request\nName: ${n}\nPhone: ${p}\nDate: ${d}\nGuests: ${guests||"not sure"}\nDetails: ${details||"-"}`;
+  $("#bOut").innerHTML=`<p style="font-weight:900;margin:0 0 6px">We couldn't send it automatically. Please email it to ${SITE.email}:</p><div class="order-text">${esc(body)}</div>
     <a class="btn btn-red btn-sm" style="margin-top:10px" href="mailto:${SITE.email}?subject=${encodeURIComponent("Event booking request")}&body=${encodeURIComponent(body)}">Open email</a>`;
 };
 renderCart();
