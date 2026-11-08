@@ -281,6 +281,8 @@ body.ordering-closed .limited,body.ordering-closed .lim-s,body.ordering-closed .
 .sched-head{text-align:center;font-family:Bangers,Impact,sans-serif;font-weight:400;font-size:1.9rem;letter-spacing:1.5px;color:var(--yellow);margin:0 0 12px}
 .clear-cart{display:block;margin:-6px 0 14px auto;background:none;border:2px solid var(--red);color:var(--red);font:800 .85rem Nunito,sans-serif;border-radius:999px;padding:6px 14px;cursor:pointer}
 .clear-cart.armed{background:var(--red);color:#fff}
+.fine{font-size:.78rem;color:var(--muted);text-align:center;margin:8px 0 0;font-weight:700;line-height:1.4}
+.t-fine{font-size:.75rem;color:var(--muted);font-weight:700;margin-top:4px}
 /* gallery */
 .gallery{background:var(--ink);color:#fff;position:relative;overflow:hidden}
 .gallery .section-head h2{color:var(--yellow)}
@@ -535,7 +537,7 @@ const SIDES = [
       <div class="polaroid pol-2"><img src="img/nachos.jpg" alt="Loaded nachos with BBQ pulled pork"><span>loaded nachos!</span></div>
       <div class="bubble">Hot diggity!</div>
       <img class="mascot-hero" src="img/mascot.png" alt="Hot Diggity Dog mascot waving">
-      <div class="starburst"><div>ANY DOG<b>$7</b></div></div>
+      <div class="starburst"><div>ANY DOG<b class="any-dog-price">$7</b></div></div>
     </div>
   </div>
 </div>
@@ -561,7 +563,7 @@ const SIDES = [
     </div>
 
     <div class="panel active" id="p-dogs">
-      <div class="step"><span class="num">STEP 1</span><h3>Choose your dog</h3><span class="ptag red big">ANY DOG $7</span></div>
+      <div class="step"><span class="num">STEP 1</span><h3>Choose your dog</h3><span class="ptag red big">ANY DOG <span class="any-dog-price">$7</span></span></div>
       <div class="step1-row">
         <div class="dog-types" id="dogTypes"></div>
       </div>
@@ -703,7 +705,7 @@ const SIDES = [
     <div class="name">Hot Diggity Dog</div>
     <p style="margin:2px 0 12px;font-weight:700">Kasantú · Select West African Cuisine · Just doggin' around</p>
     <p id="footContact" style="margin:0 0 10px;font-weight:800"></p>
-    <small>© <span id="yr"></span> Hot Diggity Dog. Prices subject to change.</small>
+    <small>© <span id="yr"></span> Hot Diggity Dog. Prices subject to change and don't include sales tax. No refunds for orders that aren't picked up.</small>
   </div>
 </footer>
 
@@ -730,6 +732,7 @@ const SIDES = [
       <div class="err" id="oErr"></div>
       <button class="btn btn-red" id="sendOrder" style="width:100%;justify-content:center">Send order to the truck</button>
       <p id="payNote" style="font-size:.88rem;color:var(--muted);text-align:center;margin:10px 0 0;font-weight:700">Pay at the window when you pick up.</p>
+      <p class="fine">Prices don't include sales tax. Tax is added when you pay.<br>No refunds for orders that aren't picked up.</p>
     </div>
     </div>
 
@@ -746,6 +749,7 @@ const SIDES = [
         <div class="t-items" id="tItems"></div>
         <div class="t-total"><span>Total</span><span id="tTotal"></span></div>
         <div class="t-foot">Show this screen at the window</div>
+        <div class="t-fine">Plus sales tax · No refunds for orders not picked up</div>
       </div>
       <div id="sent" style="display:none;margin-top:16px">
         <p style="font-weight:900;margin:0 0 8px" id="sentMsg"></p>
@@ -814,14 +818,10 @@ $("#ticker").innerHTML=[...words,...words].map(w=>`<span>${w}<i>★</i></span>`)
 
 /* menu render */
 const K=SITE.kasantu||{};
-if(K.show===false)$("#kasantu").remove();
-else $("#kSlot").innerHTML=K.name
-  ?`<div class="k-dish">${K.img?`<img src="${K.img}" alt="${esc(K.name)}" loading="lazy">`:""}<div class="kb"><h4>${K.name}</h4>${K.desc?`<p>${K.desc}${K.limited?" · seasonal or limited":""}</p>`:""}${K.price!=null?`<span class="ptag sm">$${K.price}</span>`:""}${addBtn({name:K.name,price:K.price||0,limited:K.limited})}</div></div>`
-  :`<div class="k-soon"><b>Coming soon</b>West African specials. Ask at the window!</div>`;
 let selType=null;
 function updateDropLabel(){
   const open=$("#styleDrop").classList.contains("open");
-  $("#dropCount").textContent=selType?(open?"Your "+selType+" · tap to close":"Pick a style for your "+selType):(open?"Tap to close":"Tap to see all 13");
+  $("#dropCount").textContent=selType?(open?"Your "+selType+" · tap to close":"Pick a style for your "+selType):(open?"Tap to close":"Tap to see all "+SIGV().length);
 }
 $("#dogTypes").innerHTML=DOGS.map(d=>`<button type="button" class="dog-type" data-dog="${esc(d)}"><h4>${d}</h4><small>${d==="Veggie Dog"?"plant-based option":"jumbo and juicy"}</small></button>`).join("");
 $("#dogTypes").addEventListener("click",e=>{
@@ -831,16 +831,12 @@ $("#dogTypes").addEventListener("click",e=>{
   updateDropLabel();
   if(selType)toast(selType+" selected. Now pick a style");
 });
-$("#sigGrid").innerHTML=SIGNATURE.map(d=>`<div class="sig">
-  <div class="sig-photo">${d.spicy?'<span class="spicy">🔥 SPICY</span>':""}<span class="ptag">$${d.price}</span><img src="${d.img}" alt="${esc(d.name)}" loading="lazy"></div>
-  <div class="sig-body"><h4>${d.name}</h4><p>${d.desc}</p>
-  <div class="sig-foot">${addBtn(d)}</div></div></div>`).join("");
+
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{
   document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));
   document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("active",p.id==="p-"+b.dataset.t));
 });
 const nameChip=(d,i)=>`<span role="button" tabindex="0" data-i="${i}" class="${d.spicy?"hot":""}">${d.spicy?"🔥 ":""}${d.name}</span>`;
-$("#peekStrip").innerHTML=`<div class="spicy-box">${SIGNATURE.map((d,i)=>d.spicy?nameChip(d,i):"").join("")}</div><div class="mild-box">${SIGNATURE.map((d,i)=>d.spicy?"":nameChip(d,i)).join("")}</div>`;
 let selDog=-1;
 function setStyles(mode,i){
   const dd=$("#styleDrop"),open=mode!=="closed";
@@ -850,7 +846,7 @@ function setStyles(mode,i){
   selDog=mode==="one"?i:-1;
   document.querySelectorAll("#peekStrip span").forEach(s=>s.classList.toggle("sel",+s.dataset.i===selDog));
   if(mode==="one"){
-    const d=SIGNATURE[i];
+    const d=SIGV()[i];
     $("#sigOne").innerHTML=`<div class="feature"><div class="sig-photo">${d.spicy?'<span class="spicy">🔥 SPICY</span>':""}<span class="ptag">$${d.price}</span><img src="${d.img}" alt="${esc(d.name)}"></div>
       <div class="sig-body"><h4>${d.name}</h4><p>Comes with:</p><div class="tops-list">${d.tops.map(t=>`<span>${t}</span>`).join("")}</div>
       <div class="sig-foot">${addBtn(d,"Customize and add")}</div></div></div>`;
@@ -862,16 +858,36 @@ $("#peekStrip").addEventListener("click",pickName);
 $("#peekStrip").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pickName(e)}});
 $("#navAfrican").addEventListener("click",()=>document.querySelector('.tab[data-t="african"]').click());
 $("#tchips").innerHTML=TOPPINGS.map(t=>`<span>${t}</span>`).join("");
-$("#comboList").innerHTML=COMBOS.map(c=>`<div class="combo"><div class="n">${c.n}</div>
+
+const v=i=>!i.hidden;
+const SIGV=()=>SIGNATURE.filter(v);
+function drawMenu(){
+if(K.show===false)$("#kasantu").style.display="none";
+else $("#kSlot").innerHTML=(K.name&&!K.hidden)
+  ?`<div class="k-dish">${K.img?`<img src="${K.img}" alt="${esc(K.name)}" loading="lazy">`:""}<div class="kb"><h4>${K.name}</h4>${K.desc?`<p>${K.desc}${K.limited?" · seasonal or limited":""}</p>`:""}${K.price!=null?`<span class="ptag sm">$${K.price}</span>`:""}${addBtn({name:K.name,price:K.price||0,limited:K.limited})}</div></div>`
+  :`<div class="k-soon"><b>Coming soon</b>West African specials. Ask at the window!</div>`;
+$("#sigGrid").innerHTML=SIGV().map(d=>`<div class="sig">
+  <div class="sig-photo">${d.spicy?'<span class="spicy">🔥 SPICY</span>':""}<span class="ptag">$${d.price}</span><img src="${d.img}" alt="${esc(d.name)}" loading="lazy"></div>
+  <div class="sig-body"><h4>${d.name}</h4><p>${d.desc}</p>
+  <div class="sig-foot">${addBtn(d)}</div></div></div>`).join("");
+$("#peekStrip").innerHTML=`<div class="spicy-box">${SIGV().map((d,i)=>d.spicy?nameChip(d,i):"").join("")}</div><div class="mild-box">${SIGV().map((d,i)=>d.spicy?"":nameChip(d,i)).join("")}</div>`;
+$("#comboList").innerHTML=COMBOS.filter(v).map(c=>`<div class="combo"><div class="n">${c.n}</div>
   <div><h4>${c.either?c.desc+" + your pick:":c.desc}</h4>${c.either?`<div class="either"><span>Chips + a drink</span><i>OR</i><span>Fries (no drink)</span></div>`:""}<small>${c.sub}</small>${addBtn(c,"Customize")}</div><span class="ptag red">$${c.price}</span></div>`).join("");
 const rows=list=>list.map(m=>`<div class="row-item">${m.img?`<img class="thumb" src="${m.img}" alt="" loading="lazy">`:`<div class="thumb blank">${m.icon||"🌭"}</div>`}
   <div><h4>${m.name}</h4><p>${m.desc}</p>${addBtn(m)}</div><span class="ptag">$${m.price}</span></div>`).join("");
-$("#moreList").innerHTML=rows(MORE);
-$("#chickenList").innerHTML=rows(CHICKEN);
-const SPEC_ON=SPECIALS.filter(s=>s.on);
-if(SPEC_ON.length)$("#specialList").innerHTML=rows(SPEC_ON);
-else{document.querySelector('.tab[data-t="specials"]').remove();$("#p-specials").remove()}
-$("#sideList").innerHTML=SIDES.map(s=>`<div class="side-line"><span>${s.name}</span><span class="dots"></span><span class="ptag sm">$${s.price}</span>${s.limited?`<span class="lim-s" title="${s.seasonal?"Seasonal":"Limited"}: ask at the window">⏳</span>`:ORDER?`<button class="add-s add" data-k="${reg(s)}" aria-label="Add ${esc(s.name)}">+</button>`:""}</div>`).join("")+(SIDES.some(s=>s.limited)?`<p class="lim-key">⏳ = seasonal or limited, ask at the window</p>`:"");
+$("#moreList").innerHTML=rows(MORE.filter(v));
+$("#chickenList").innerHTML=rows(CHICKEN.filter(v));
+const SPEC_ON=SPECIALS.filter(s=>s.on&&!s.hidden);
+$("#specialList").innerHTML=rows(SPEC_ON);
+const st=document.querySelector('.tab[data-t="specials"]');if(st)st.style.display=SPEC_ON.length?"":"none";
+if(!SPEC_ON.length&&$("#p-specials").classList.contains("active"))document.querySelector('.tab[data-t="dogs"]').click();
+$("#sideList").innerHTML=SIDES.filter(v).map(s=>`<div class="side-line"><span>${s.name}</span><span class="dots"></span><span class="ptag sm">$${s.price}</span>${s.limited?`<span class="lim-s" title="${s.seasonal?"Seasonal":"Limited"}: ask at the window">⏳</span>`:ORDER?`<button class="add-s add" data-k="${reg(s)}" aria-label="Add ${esc(s.name)}">+</button>`:""}</div>`).join("")+(SIDES.filter(v).some(s=>s.limited)?`<p class="lim-key">⏳ = seasonal or limited, ask at the window</p>`:"");
+
+  const any=(BYO.price!=null?BYO.price:7);
+  document.querySelectorAll(".any-dog-price").forEach(e=>e.textContent="$"+any);
+  updateDropLabel();
+}
+drawMenu();
 
 /* customizer */
 let cz=null;
@@ -1064,11 +1080,28 @@ function drawSched(list){
   $("#schedHead").style.display=(list&&list.length)?"block":"none";
 }
 drawSched(SITE.schedule);
+/* Menu tab from the Google Sheet: price + ORDER ONLINE / ASK AT WINDOW / HIDE */
+function applyMenu(menu){
+  const map={};menu.forEach(r=>{if(r&&r.item)map[String(r.item).trim().toLowerCase()]=r});
+  const items=[...SIGNATURE,BYO,...COMBOS,...CHICKEN,...MORE,...SIDES,...SPECIALS,SITE.kasantu||{}];
+  items.forEach(it=>{
+    const r=it&&it.name&&map[it.name.toLowerCase()];if(!r)return;
+    const p=parseFloat(String(r.price).replace(/[^0-9.]/g,""));if(!isNaN(p)&&p>0)it.price=p;
+    const s=String(r.status||"").toUpperCase();
+    it.hidden=s.startsWith("HIDE");
+    it.limited=s.startsWith("ASK");
+    if(SPECIALS.includes(it))it.on=!it.hidden;
+  });
+  // Build Your Own and styled dogs share the "any dog" price shown in tags
+  if(SITE.kasantu){SITE.kasantu.show=true}
+  drawMenu();
+}
 /* live switches from the Google Sheet "Settings" tab */
 const yes=v=>/^(on|yes|true|open)$/i.test(String(v||"").trim());
 if(SHEET){
   fetch(SHEET).then(r=>r.json()).then(j=>{
     if(j&&Array.isArray(j.week))drawSched(j.week);
+    if(j&&Array.isArray(j.menu)&&j.menu.length)applyMenu(j.menu);
     const s=j&&j.settings;if(!s)return;
     if(ORDER&&s.onlineOrdering!==undefined&&!yes(s.onlineOrdering)){
       document.body.classList.add("ordering-closed");

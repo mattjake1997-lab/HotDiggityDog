@@ -9,9 +9,11 @@
  *   SQUARE_ACCESS_TOKEN  (type: Secret)  - Production access token from developer.squareup.com
  *   SQUARE_LOCATION_ID   (type: Text)    - the truck's Location ID from the same dashboard
  *   SITE_URL             (type: Text)    - the website address, e.g. https://www.hotdiggitydogtruck.com/
+ *   SHEET_URL            (type: Text)    - the Google Sheet web app address (ends in /exec)
  *
- * If prices change on the website, update BASE_PRICES below to match.
- * Customers can never be charged LESS than these base prices.
+ * Prices and "ORDER ONLINE / ASK AT WINDOW / HIDE" come from the sheet's Menu tab.
+ * If the sheet can't be reached, BASE_PRICES below are used instead.
+ * Customers can never be charged LESS than the menu price.
  */
 const SQUARE_VERSION = "2026-09-16";
 
@@ -78,9 +80,15 @@ export default {
       const lines = Array.isArray(d.lines) ? d.lines.slice(0, 50) : [];
       if (!lines.length) throw new Error("The order is empty.");
 
+      const sheet = await sheetMenu(env);
       const line_items = lines.map((l) => {
-        const base = BASE_PRICES[l.name];
+        let base = BASE_PRICES[l.name];
         if (base == null) throw new Error("Unknown menu item: " + l.name);
+        const row = sheet && sheet[String(l.name).toLowerCase()];
+        if (row) {
+          if (row.status && row.status !== "ORDER ONLINE") throw new Error(l.name + " can't be ordered online right now. Please ask at the window.");
+          if (row.price > 0) base = row.price;
+        }
         const unit = Math.max(Number(l.unit) || 0, base);          // never below the menu price
         const qty = Math.min(Math.max(parseInt(l.qty, 10) || 1, 1), 50);
         const item = {
@@ -146,6 +154,22 @@ export default {
 
 // Finds the customer in his Square customer list by phone, or adds them,
 // so the order shows the customer's name on the tablet.
+// Reads the Menu tab from the Google Sheet. Returns null if it can't.
+async function sheetMenu(env) {
+  if (!env.SHEET_URL) return null;
+  try {
+    const r = await fetch(env.SHEET_URL, { redirect: "follow", cf: { cacheTtl: 30 } });
+    const j = await r.json();
+    if (!Array.isArray(j.menu) || !j.menu.length) return null;
+    const m = {};
+    for (const x of j.menu) {
+      const price = parseFloat(String(x.price || "").replace(/[^0-9.]/g, ""));
+      m[String(x.item || "").trim().toLowerCase()] = { price: isNaN(price) ? 0 : price, status: String(x.status || "").trim().toUpperCase() };
+    }
+    return m;
+  } catch (e) { return null; }
+}
+
 async function findOrCreateCustomer(env, name, phone) {
   const h = {
     "Authorization": "Bearer " + env.SQUARE_ACCESS_TOKEN,

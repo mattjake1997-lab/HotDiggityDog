@@ -18,6 +18,55 @@ const STATUSES = ["NEW", "MAKING", "READY", "PICKED UP", "CANCELED"];
 const WEEK_SHEET = "This Week";
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
+// The "Menu" tab: he changes prices and what can be ordered online.
+const MENU_SHEET = "Menu";
+const STATUS_CHOICES = ["ORDER ONLINE", "ASK AT WINDOW", "HIDE"];
+const MENU_DEFAULT = [
+  ["Hot dog styles", "Firecracker", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "South of the Border", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "Fiery Diggity", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "Sweet & Spicy", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "Spanish Dog", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "Chili Cheese Dog", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "Cali Dog", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "Everything Dog", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "Taco Dog", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "German Dog", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "Chicago Dog", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "BLT Dog", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "Street Dog", 7, "ORDER ONLINE"],
+  ["Hot dog styles", "Build Your Own Dog", 7, "ORDER ONLINE"],
+  ["Combos", "Any Hot Dog Combo", 10, "ORDER ONLINE"],
+  ["Combos", "Crispy Chicken Sandwich Combo", 11, "ASK AT WINDOW"],
+  ["Combos", "BBQ Sandwich Combo", 11, "ORDER ONLINE"],
+  ["Combos", "Mozzarella Sticks Combo", 12, "ORDER ONLINE"],
+  ["Combos", "Any Dog + Lemon Shake-Up", 12, "ASK AT WINDOW"],
+  ["Chicken & sandwiches", "Chicken Tenders (3 pc)", 7, "ORDER ONLINE"],
+  ["Chicken & sandwiches", "Chicken Tenders (5 pc)", 9, "ORDER ONLINE"],
+  ["Chicken & sandwiches", "BBQ Pulled Pork or Chicken Sandwich", 8, "ORDER ONLINE"],
+  ["Chicken & sandwiches", "Crispy Chicken Sandwich", 8, "ASK AT WINDOW"],
+  ["Chicken & sandwiches", "Corn Dog", 7, "ORDER ONLINE"],
+  ["Chicken & sandwiches", "Pork Parfait", 9, "ASK AT WINDOW"],
+  ["Nachos & fries", "Loaded Nachos", 10, "ORDER ONLINE"],
+  ["Nachos & fries", "Regular Nachos", 7, "ORDER ONLINE"],
+  ["Nachos & fries", "Chili Cheese Fries", 7, "ORDER ONLINE"],
+  ["Nachos & fries", "Loaded Fries", 10, "ORDER ONLINE"],
+  ["Sides & drinks", "Fries", 4, "ORDER ONLINE"],
+  ["Sides & drinks", "Chips", 2, "ORDER ONLINE"],
+  ["Sides & drinks", "Coleslaw", 2, "ORDER ONLINE"],
+  ["Sides & drinks", "Mozzarella Sticks (6 pc)", 7, "ORDER ONLINE"],
+  ["Sides & drinks", "Side of Cheese Sauce", 2, "ORDER ONLINE"],
+  ["Sides & drinks", "Side of Chili Sauce", 2, "ORDER ONLINE"],
+  ["Sides & drinks", "Drink", 2, "ORDER ONLINE"],
+  ["Sides & drinks", "Lemon Shake-Up (24 oz)", 7, "ASK AT WINDOW"],
+  ["Sides & drinks", "Lemon Shake-Up Refill", 4, "ASK AT WINDOW"],
+  ["Specials (wings sign)", "Boneless Wings (6 pc)", 7, "HIDE"],
+  ["Specials (wings sign)", "Bone-In Wings (5 pc)", 10, "HIDE"],
+  ["Specials (wings sign)", "Chicken Drumsticks (3 pc)", 7, "HIDE"],
+  ["Specials (wings sign)", "Chicken Drumsticks (5 pc)", 9, "HIDE"],
+  ["West African", "Peanut Sauce Chicken", 10, "ASK AT WINDOW"]
+];
+
 // The "Settings" tab: the owner changes these from the Google Sheets app.
 const SETTINGS_SHEET = "Settings";
 const SETTINGS = [
@@ -27,6 +76,7 @@ const SETTINGS = [
   ["Today's location", "todayLocation", "", null],
   ["Today's hours", "todayHours", "", null],
   ["Message when ordering is OFF", "closedMessage", "Online ordering is closed right now. Come see us at the window!", null],
+  ["Send order emails to", "notifyEmail", NOTIFY_EMAIL, null],
 ];
 
 /** Adds a "Hot Diggity Dog" menu to the sheet (on a computer). */
@@ -77,6 +127,8 @@ function setup() {
   setupSettings_();
   setupWeek_();
   getEventSheet_();
+  setupMenu_();
+  setupHowTo_();
   // Ask once for email permission so new-order emails work.
   if (NOTIFY_EMAIL) MailApp.getRemainingDailyQuota();
 }
@@ -93,8 +145,9 @@ function doPost(e) {
     const items = (d.items || []).map(String).join("\n");
     sh.appendRow([num, new Date(), "NEW", clean_(d.name), "'" + clean_(d.phone), items,
                   clean_(d.notes), clean_(d.total), clean_(d.payment || "Pay at window")]);
-    if (NOTIFY_EMAIL) {
-      MailApp.sendEmail(NOTIFY_EMAIL, "🌭 New order #" + num + " – " + clean_(d.name),
+    const to = notifyEmail_();
+    if (to) {
+      MailApp.sendEmail(to, "🌭 New order #" + num + " – " + clean_(d.name),
         "Order #" + num + "\nName: " + clean_(d.name) + "\nPhone: " + clean_(d.phone) +
         "\n\n" + items + (d.notes ? "\n\nNotes: " + clean_(d.notes) : "") + "\n\nTotal: " + clean_(d.total) +
         " (" + clean_(d.payment || "Pay at window") + ")");
@@ -129,8 +182,9 @@ function saveEvent_(d) {
   const sh = getEventSheet_();
   sh.appendRow([new Date(), "NEW", clean_(d.name), "'" + clean_(d.phone), clean_(d.date),
                 clean_(d.guests || "not sure"), clean_(d.details || "")]);
-  if (NOTIFY_EMAIL) {
-    MailApp.sendEmail(NOTIFY_EMAIL, "🎉 Event request – " + clean_(d.name) + " (" + clean_(d.date) + ")",
+  const to = notifyEmail_();
+  if (to) {
+    MailApp.sendEmail(to, "🎉 Event request – " + clean_(d.name) + " (" + clean_(d.date) + ")",
       "Event booking request\nName: " + clean_(d.name) + "\nPhone: " + clean_(d.phone) +
       "\nDate: " + clean_(d.date) + "\nGuests: " + clean_(d.guests || "not sure") +
       "\nDetails: " + clean_(d.details || "-"));
@@ -157,7 +211,118 @@ function doGet() {
       });
     }
   } catch (e) {}
-  return json_({ ok: true, message: "Hot Diggity Dog order receiver is running.", settings: settings, week: week });
+  const menu = [];
+  try {
+    const mn = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(MENU_SHEET);
+    if (mn && mn.getLastRow() > 1) {
+      mn.getRange(2, 1, mn.getLastRow() - 1, 4).getDisplayValues().forEach(([section, item, price, status]) => {
+        if (String(item).trim()) menu.push({ item: item, price: price, status: status });
+      });
+    }
+  } catch (e) {}
+  return json_({ ok: true, message: "Hot Diggity Dog order receiver is running.", settings: settings, week: week, menu: menu });
+}
+
+function setupMenu_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(MENU_SHEET);
+  const isNew = !sh;
+  if (!sh) sh = ss.insertSheet(MENU_SHEET);
+  if (isNew || sh.getLastRow() < 2) {
+    sh.clear();
+    sh.appendRow(["Section", "Item (don't change the name)", "Price", "Online status"]);
+    sh.getRange(2, 1, MENU_DEFAULT.length, 4).setValues(MENU_DEFAULT);
+  } else {
+    // Add any new items that aren't in his sheet yet, without touching his changes.
+    const have = new Set(sh.getRange(2, 2, sh.getLastRow() - 1, 1).getDisplayValues().map(r => String(r[0]).trim()));
+    MENU_DEFAULT.filter(r => !have.has(r[1])).forEach(r => sh.appendRow(r));
+  }
+  sh.getRange(1, 1, 1, 4).setFontWeight("bold").setBackground("#1F6B57").setFontColor("#FFFFFF");
+  sh.setFrozenRows(1);
+  const n = sh.getLastRow() - 1;
+  sh.getRange(2, 3, n, 1).setNumberFormat("$0.00");
+  sh.getRange(2, 4, n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_CHOICES, true).build());
+  const rng = sh.getRange(2, 1, n, 4);
+  sh.setConditionalFormatRules([
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$D2="ORDER ONLINE"').setBackground("#C9EBD9").setRanges([rng]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$D2="ASK AT WINDOW"').setBackground("#FFE9A8").setRanges([rng]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$D2="HIDE"').setBackground("#E6E6E6").setRanges([rng]).build(),
+  ]);
+  sh.setColumnWidth(1, 170); sh.setColumnWidth(2, 300); sh.setColumnWidth(3, 90); sh.setColumnWidth(4, 160);
+  // Warn (not block) if someone edits the Section or Item name columns.
+  sh.getProtections(SpreadsheetApp.ProtectionType.RANGE).forEach(p => p.remove());
+  sh.getRange(2, 1, n, 2).protect().setDescription("Item names must match the website").setWarningOnly(true);
+}
+
+function setupHowTo_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName("📖 How To");
+  if (!sh) sh = ss.insertSheet("📖 How To", 0);
+  sh.clear();
+  const lines = [
+    ["📖 HOW TO RUN YOUR WEBSITE", "title"],
+    ["Everything below is done in this Google Sheet. Changes show on the website the next time someone opens it.", "note"],
+    ["", ""],
+    ["🧾 SEE NEW ORDERS", "head"],
+    ["1. Tap the ORDERS tab at the bottom.", ""],
+    ["2. New orders show at the bottom of the list with the word NEW.", ""],
+    ["3. Tap the NEW box to change it: MAKING → READY → PICKED UP.", ""],
+    ["4. Customers show you their ORDER NUMBER at the window. Match it to the first column.", ""],
+    ["5. \"Pay at window\" = take their money. \"Paying online\" = they already paid. Check the Square app.", ""],
+    ["", ""],
+    ["⛔ TURN ONLINE ORDERS OFF (busy, closed, or something is wrong)", "head"],
+    ["1. Tap the SETTINGS tab.", ""],
+    ["2. Next to \"Online ordering\" tap ON and change it to OFF.", ""],
+    ["3. The website now shows just the menu. Turn it back ON when you're ready.", ""],
+    ["", ""],
+    ["💳 TURN CARD PAYMENTS OFF (keep pay at window)", "head"],
+    ["1. SETTINGS tab → \"Pay now with card\" → change ON to OFF.", ""],
+    ["", ""],
+    ["📍 WHERE THE TRUCK IS TODAY", "head"],
+    ["1. SETTINGS tab → type the address next to \"Today's location\".", ""],
+    ["2. Type the hours next to \"Today's hours\" (example: 11am - 2pm).", ""],
+    ["3. Erase them when you're done for the day.", ""],
+    ["", ""],
+    ["📅 THIS WEEK'S SCHEDULE (do this every Monday)", "head"],
+    ["1. Tap the THIS WEEK tab.", ""],
+    ["2. Next to each day, type where you'll be and the hours.", ""],
+    ["3. Leave a day blank if you're not going out. Blank days don't show.", ""],
+    ["", ""],
+    ["🌭 CHANGE A PRICE OR WHAT PEOPLE CAN ORDER", "head"],
+    ["1. Tap the MENU tab.", ""],
+    ["2. To change a price: tap the price and type the new one.", ""],
+    ["3. Change the Online status column:", ""],
+    ["      ORDER ONLINE = people can order and pay for it on the website", ""],
+    ["      ASK AT WINDOW = it shows on the menu, but they have to ask you", ""],
+    ["      HIDE = it does not show on the website at all", ""],
+    ["4. Don't change the item NAMES. The website needs them spelled exactly the same.", ""],
+    ["   Printed menus and signs don't change by themselves. Ask Matt for new ones.", "note"],
+    ["", ""],
+    ["🎉 EVENT REQUESTS", "head"],
+    ["1. Tap the EVENT REQUESTS tab. Call the customer, then change NEW to CALLED, BOOKED, or DECLINED.", ""],
+    ["", ""],
+    ["💵 REFUND A CARD ORDER", "head"],
+    ["1. Open the Square app → Transactions → tap the payment → Issue refund.", ""],
+    ["   No refunds for orders that aren't picked up (this is on the website).", "note"],
+    ["", ""],
+    ["🆘 IF SOMETHING LOOKS WRONG", "head"],
+    ["1. SETTINGS → Online ordering → OFF. Customers order at the window like normal.", ""],
+    ["2. Call or text Matt.", ""],
+    ["", ""],
+    ["⚠️ PLEASE DON'T: delete tabs, rename tabs, or open Extensions → Apps Script.", "warn"],
+  ];
+  sh.getRange(1, 1, lines.length, 1).setValues(lines.map(l => [l[0]]));
+  sh.setColumnWidth(1, 900);
+  sh.getRange(1, 1, lines.length, 1).setFontSize(14).setWrap(true).setVerticalAlignment("middle");
+  lines.forEach((l, i) => {
+    const c = sh.getRange(i + 1, 1);
+    if (l[1] === "title") c.setFontSize(22).setFontWeight("bold").setBackground("#F6C619");
+    if (l[1] === "head") c.setFontSize(16).setFontWeight("bold").setBackground("#D62828").setFontColor("#FFFFFF");
+    if (l[1] === "note") c.setFontStyle("italic").setFontColor("#6B5546");
+    if (l[1] === "warn") c.setFontWeight("bold").setBackground("#F4C7C7");
+  });
+  sh.setHiddenGridlines(true);
+  sh.setFrozenRows(1);
 }
 
 function setupWeek_() {
@@ -185,6 +350,7 @@ function setupSettings_() {
     todayLocation: "Type an address or place. Leave blank to hide",
     todayHours: "Example: 11am - 2pm",
     closedMessage: "Shown on the website when ordering is OFF",
+    notifyEmail: "Who gets an email for each new order (blank = no emails)",
   };
   SETTINGS.forEach(([label, key, start, choices], i) => {
     const row = i + 2;
@@ -219,6 +385,17 @@ function clean_(v) {
   // Stops anything typed into the order form from being treated as a spreadsheet formula.
   const s = String(v == null ? "" : v).slice(0, 2000);
   return /^[=+\-@]/.test(s) ? "'" + s : s;
+}
+
+function notifyEmail_() {
+  try {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SETTINGS_SHEET);
+    if (sh) {
+      const i = SETTINGS.findIndex(r => r[1] === "notifyEmail");
+      if (i >= 0) return String(sh.getRange(i + 2, 2).getDisplayValue()).trim();
+    }
+  } catch (e) {}
+  return NOTIFY_EMAIL;
 }
 
 function json_(o) {
