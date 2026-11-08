@@ -343,6 +343,7 @@ footer .credit a{color:#fff;text-decoration:underline}
 .cart-fab.show{display:inline-flex}
 .overlay{position:fixed;inset:0;background:rgba(36,22,15,.6);z-index:60;display:none;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
+.sub-pill{display:inline-block;margin:0 0 8px;background:var(--yellow);border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font-weight:900;font-size:.82rem}
 .hdc-btn{margin-top:12px;font:inherit;font-weight:900;background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:999px;padding:9px 18px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;transform:rotate(-1deg)}
 .hdc-btn:hover{transform:rotate(0) translateY(-1px)}
 .hdc-sheet{max-width:640px}
@@ -493,7 +494,7 @@ const CHICKEN = [
   {name:"BBQ Pulled Pork or Chicken Sandwich", price:8, groups:[PROTEIN], tops:["Pickles","Diced onions"], meal:true, desc:"BBQ pulled pork or chicken topped with pickles and diced onions", icon:"🥪"},
   {name:"Crispy Chicken Sandwich", limited:true, price:8, img:"img/crispy-chicken.jpg", tops:["Tomato","Sweet and spicy slaw"], meal:true, desc:"Crispy chicken with sliced tomato and sweet and spicy slaw"},
   {name:"Corn Dog", price:7, desc:"Golden, crispy, and hand-held", icon:"🌭"},
-  {name:"Pork Parfait", limited:true, price:9, img:"img/parfait.jpg", groups:[PROTEIN], tops:["Sweet corn","Shredded cheese","BBQ drizzle"], desc:"Mashed potatoes layered with BBQ pulled pork (or sub BBQ chicken), sweet corn, shredded cheese, and BBQ drizzle"}
+  {name:"Pork Parfait", limited:true, price:9, img:"img/parfait.jpg", groups:[PROTEIN], sub:"🐔 Or sub BBQ chicken", tops:["Sweet corn","Shredded cheese","BBQ drizzle"], desc:"Mashed potatoes layered with BBQ pulled pork, sweet corn, shredded cheese, and BBQ drizzle"}
 ];
 
 const MORE = [
@@ -908,7 +909,7 @@ $("#comboList").innerHTML=COMBOS.filter(v).map(c=>`<div class="combo"><div class
   <div><h4>${c.either?c.desc+" + your pick:":c.desc}</h4>${c.either?`<div class="either"><span>Chips + a drink</span><i>OR</i><span>Fries (no drink)</span></div>`:""}<small>${c.sub}</small>${addBtn(c,"Customize")}</div><span class="ptag red">$${c.price}</span></div>`).join("")
   +XC.map((c,i)=>`<div class="combo"><div class="n">${COMBOS.filter(v).length+i+1}</div><div><h4>${c.name} ${NEWB(c)}</h4>${c.desc?`<small>${c.desc}</small>`:""}${addBtn(c)}</div><span class="ptag red">$${pr(c.price)}</span></div>`).join("");
 const rows=list=>list.map(m=>`<div class="row-item">${m.img?`<img class="thumb" src="${m.img}" alt="" loading="lazy">`:`<div class="thumb blank">${m.icon||"🌭"}</div>`}
-  <div><h4>${m.name} ${NEWB(m)}</h4><p>${m.desc}</p>${addBtn(m)}</div><span class="ptag">$${pr(m.price)}</span></div>`).join("");
+  <div><h4>${m.name} ${NEWB(m)}</h4><p>${m.desc}</p>${m.sub?`<span class="sub-pill">${m.sub}</span>`:""}${addBtn(m)}</div><span class="ptag">$${pr(m.price)}</span></div>`).join("");
 $("#moreList").innerHTML=rows(MORE.filter(v));
 const X=k=>EXTRA.filter(e=>e.sec===k);
 ["chicken","loaded","specials"].forEach(k=>{$("#x-"+k).innerHTML=rows(X(k))});
