@@ -215,8 +215,8 @@ function doGet() {
   try {
     const mn = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(MENU_SHEET);
     if (mn && mn.getLastRow() > 1) {
-      mn.getRange(2, 1, mn.getLastRow() - 1, 4).getDisplayValues().forEach(([section, item, price, status]) => {
-        if (String(item).trim()) menu.push({ item: item, price: price, status: status });
+      mn.getRange(2, 1, mn.getLastRow() - 1, 5).getDisplayValues().forEach(([section, item, price, status, desc]) => {
+        if (String(item).trim()) menu.push({ item: item, price: price, status: status, desc: desc });
       });
     }
   } catch (e) {}
@@ -230,25 +230,29 @@ function setupMenu_() {
   if (!sh) sh = ss.insertSheet(MENU_SHEET);
   if (isNew || sh.getLastRow() < 2) {
     sh.clear();
-    sh.appendRow(["Section", "Item (don't change the name)", "Price", "Online status"]);
+    sh.appendRow(["Section", "Item (don't change the name)", "Price", "Online status", "Description (new items only)"]);
     sh.getRange(2, 1, MENU_DEFAULT.length, 4).setValues(MENU_DEFAULT);
   } else {
     // Add any new items that aren't in his sheet yet, without touching his changes.
     const have = new Set(sh.getRange(2, 2, sh.getLastRow() - 1, 1).getDisplayValues().map(r => String(r[0]).trim()));
     MENU_DEFAULT.filter(r => !have.has(r[1])).forEach(r => sh.appendRow(r));
   }
-  sh.getRange(1, 1, 1, 4).setFontWeight("bold").setBackground("#1F6B57").setFontColor("#FFFFFF");
+  sh.getRange(1, 5).setValue("Description (new items only)");
+  sh.getRange(1, 1, 1, 5).setFontWeight("bold").setBackground("#1F6B57").setFontColor("#FFFFFF");
   sh.setFrozenRows(1);
   const n = sh.getLastRow() - 1;
   sh.getRange(2, 3, n, 1).setNumberFormat("$0.00");
   sh.getRange(2, 4, n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_CHOICES, true).build());
-  const rng = sh.getRange(2, 1, n, 4);
+  const rng = sh.getRange(2, 1, Math.max(n, 1) + 50, 5);
+  // New rows he types at the bottom also get the dropdown
+  sh.getRange(2, 4, n + 50, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUS_CHOICES, true).build());
+  sh.getRange(2, 3, n + 50, 1).setNumberFormat("$0.00");
   sh.setConditionalFormatRules([
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$D2="ORDER ONLINE"').setBackground("#C9EBD9").setRanges([rng]).build(),
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$D2="ASK AT WINDOW"').setBackground("#FFE9A8").setRanges([rng]).build(),
     SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$D2="HIDE"').setBackground("#E6E6E6").setRanges([rng]).build(),
   ]);
-  sh.setColumnWidth(1, 170); sh.setColumnWidth(2, 300); sh.setColumnWidth(3, 90); sh.setColumnWidth(4, 160);
+  sh.setColumnWidth(1, 170); sh.setColumnWidth(2, 300); sh.setColumnWidth(3, 90); sh.setColumnWidth(4, 160); sh.setColumnWidth(5, 320);
   // Warn (not block) if someone edits the Section or Item name columns.
   sh.getProtections(SpreadsheetApp.ProtectionType.RANGE).forEach(p => p.remove());
   sh.getRange(2, 1, n, 2).protect().setDescription("Item names must match the website").setWarningOnly(true);
@@ -296,6 +300,14 @@ function setupHowTo_() {
     ["      ASK AT WINDOW = it shows on the menu, but they have to ask you", ""],
     ["      HIDE = it does not show on the website at all", ""],
     ["4. Don't change the item NAMES. The website needs them spelled exactly the same.", ""],
+    ["", ""],
+    ["➕ ADD A NEW ITEM YOURSELF", "head"],
+    ["1. Go to the MENU tab and scroll to the first empty row at the bottom.", ""],
+    ["2. Type the item name in the Item column (example: Mac & Cheese).", ""],
+    ["3. Type the price. Pick ORDER ONLINE or ASK AT WINDOW.", ""],
+    ["4. (Optional) Type a short description in the last column.", ""],
+    ["5. It shows on the website under \"Also on the menu\" in the Nachos and Fries section.", ""],
+    ["   It won't have a photo or choices. Tell Matt if you want it added the full way.", "note"],
     ["   Printed menus and signs don't change by themselves. Ask Matt for new ones.", "note"],
     ["", ""],
     ["🎉 EVENT REQUESTS", "head"],

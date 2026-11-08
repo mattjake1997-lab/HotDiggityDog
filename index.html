@@ -327,6 +327,7 @@ footer{background:var(--red);color:#fff;padding:40px 0 100px;text-align:center;p
 footer .fm{width:120px;margin:-110px auto 6px;filter:drop-shadow(0 8px 6px rgba(0,0,0,.25))}
 footer .name{font-family:Bangers;font-size:2.4rem;letter-spacing:1.5px;color:var(--yellow)}
 footer small{opacity:.8}
+#extraWrap .extra-head{font-family:Bangers,cursive;letter-spacing:1px;font-size:1.5rem;margin:22px 0 8px;color:var(--red)}
 footer .credit{margin:14px 0 0;font-size:.8rem;opacity:.75}
 footer .credit a{color:#fff;text-decoration:underline}
 
@@ -603,6 +604,7 @@ const SIDES = [
       <div class="board">
         <div class="board-title">Nachos, Fries and More</div>
         <div id="moreList"></div>
+        <div id="extraWrap" style="display:none"><h3 class="extra-head">⭐ Also on the menu</h3><div id="extraList"></div></div>
       </div>
     </div>
 
@@ -864,6 +866,7 @@ $("#tchips").innerHTML=TOPPINGS.map(t=>`<span>${t}</span>`).join("");
 
 const v=i=>!i.hidden;
 const SIGV=()=>SIGNATURE.filter(v);
+const EXTRA=[];
 function drawMenu(){
 if(K.show===false)$("#kasantu").style.display="none";
 else $("#kSlot").innerHTML=(K.name&&!K.hidden)
@@ -877,8 +880,9 @@ $("#peekStrip").innerHTML=`<div class="spicy-box">${SIGV().map((d,i)=>d.spicy?na
 $("#comboList").innerHTML=COMBOS.filter(v).map(c=>`<div class="combo"><div class="n">${c.n}</div>
   <div><h4>${c.either?c.desc+" + your pick:":c.desc}</h4>${c.either?`<div class="either"><span>Chips + a drink</span><i>OR</i><span>Fries (no drink)</span></div>`:""}<small>${c.sub}</small>${addBtn(c,"Customize")}</div><span class="ptag red">$${c.price}</span></div>`).join("");
 const rows=list=>list.map(m=>`<div class="row-item">${m.img?`<img class="thumb" src="${m.img}" alt="" loading="lazy">`:`<div class="thumb blank">${m.icon||"🌭"}</div>`}
-  <div><h4>${m.name}</h4><p>${m.desc}</p>${addBtn(m)}</div><span class="ptag">$${m.price}</span></div>`).join("");
+  <div><h4>${m.name}</h4><p>${m.desc}</p>${addBtn(m)}</div><span class="ptag">$${(+m.price)%1?(+m.price).toFixed(2):m.price}</span></div>`).join("");
 $("#moreList").innerHTML=rows(MORE.filter(v));
+$("#extraList").innerHTML=rows(EXTRA);$("#extraWrap").style.display=EXTRA.length?"":"none";
 $("#chickenList").innerHTML=rows(CHICKEN.filter(v));
 const SPEC_ON=SPECIALS.filter(s=>s.on&&!s.hidden);
 $("#specialList").innerHTML=rows(SPEC_ON);
@@ -1085,6 +1089,14 @@ function drawSched(list){
 drawSched(SITE.schedule);
 /* Menu tab from the Google Sheet: price + ORDER ONLINE / ASK AT WINDOW / HIDE */
 function applyMenu(menu){
+  const known=new Set([...SIGNATURE,BYO,...COMBOS,...CHICKEN,...MORE,...SIDES,...SPECIALS,SITE.kasantu||{}].filter(i=>i&&i.name).map(i=>i.name.toLowerCase()));
+  EXTRA.length=0;
+  menu.forEach(r=>{
+    const name=String(r&&r.item||"").trim();if(!name||known.has(name.toLowerCase()))return;
+    const st=String(r.status||"").toUpperCase();if(st.startsWith("HIDE"))return;
+    const p=parseFloat(String(r.price||"").replace(/[^0-9.]/g,""));if(isNaN(p)||p<=0)return;
+    EXTRA.push({name:name.replace(/[<>"]/g,"").slice(0,80),price:p,desc:String(r.desc||"").replace(/[<>"]/g,"").slice(0,200),icon:"⭐",limited:st.startsWith("ASK")});
+  });
   const map={};menu.forEach(r=>{if(r&&r.item)map[String(r.item).trim().toLowerCase()]=r});
   const items=[...SIGNATURE,BYO,...COMBOS,...CHICKEN,...MORE,...SIDES,...SPECIALS,SITE.kasantu||{}];
   items.forEach(it=>{

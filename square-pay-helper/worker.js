@@ -83,8 +83,10 @@ export default {
       const sheet = await sheetMenu(env);
       const line_items = lines.map((l) => {
         let base = BASE_PRICES[l.name];
+        const row = sheet && sheet[String(l.name).trim().toLowerCase()];
+        // A brand-new item he added to the sheet's Menu tab
+        if (base == null && row && row.status === "ORDER ONLINE" && row.price > 0) base = row.price;
         if (base == null) throw new Error("Unknown menu item: " + l.name);
-        const row = sheet && sheet[String(l.name).toLowerCase()];
         if (row) {
           if (row.status && row.status !== "ORDER ONLINE") throw new Error(l.name + " can't be ordered online right now. Please ask at the window.");
           if (row.price > 0) base = row.price;
