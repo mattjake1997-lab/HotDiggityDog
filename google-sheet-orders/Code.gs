@@ -23,7 +23,9 @@ const MENU_SHEET = "Menu";
 const STATUS_CHOICES = ["ORDER ONLINE", "ASK AT WINDOW", "HIDE"];
 // Which part of the website a NEW item shows up in.
 // These match the tabs on the website menu.
-const SECTION_CHOICES = ["Custom Dogs", "Chicken and Sandwiches", "Nachos and Fries", "Combos", "Sides and Drinks", "West African Cuisine", "Specials"];
+const SECTION_CHOICES = ["Custom Dogs", "Chicken and Sandwiches", "Nachos and Fries", "Combos", "Sides and Drinks", "West African Cuisine", "Off the Bun"];
+// Items that moved to a different website tab.
+const ITEM_SECTIONS = {"Corn Dog": "Off the Bun", "Pork Parfait": "Off the Bun", "Boneless Wings (6 pc)": "Chicken and Sandwiches", "Bone-In Wings (5 pc)": "Chicken and Sandwiches", "Chicken Drumsticks (3 pc)": "Chicken and Sandwiches", "Chicken Drumsticks (5 pc)": "Chicken and Sandwiches"};
 const OLD_SECTIONS = {"Hot dog styles": "Custom Dogs", "Chicken & sandwiches": "Chicken and Sandwiches", "Nachos & fries": "Nachos and Fries", "Sides & drinks": "Sides and Drinks", "Specials (wings sign)": "Specials", "West African": "West African Cuisine"};
 const MENU_DEFAULT = [
   ["Custom Dogs", "Firecracker", 7, "ORDER ONLINE"],
@@ -49,8 +51,8 @@ const MENU_DEFAULT = [
   ["Chicken and Sandwiches", "Chicken Tenders (5 pc)", 9, "ORDER ONLINE"],
   ["Chicken and Sandwiches", "BBQ Pulled Pork or Chicken Sandwich", 8, "ORDER ONLINE"],
   ["Chicken and Sandwiches", "Crispy Chicken Sandwich", 8, "ASK AT WINDOW"],
-  ["Chicken and Sandwiches", "Corn Dog", 7, "ORDER ONLINE"],
-  ["Chicken and Sandwiches", "Pork Parfait", 9, "ASK AT WINDOW"],
+  ["Off the Bun", "Corn Dog", 7, "ORDER ONLINE"],
+  ["Off the Bun", "Pork Parfait", 9, "ASK AT WINDOW"],
   ["Nachos and Fries", "Loaded Nachos", 10, "ORDER ONLINE"],
   ["Nachos and Fries", "Regular Nachos", 7, "ORDER ONLINE"],
   ["Nachos and Fries", "Chili Cheese Fries", 7, "ORDER ONLINE"],
@@ -64,10 +66,10 @@ const MENU_DEFAULT = [
   ["Sides and Drinks", "Drink", 2, "ORDER ONLINE"],
   ["Sides and Drinks", "Lemon Shake-Up (24 oz)", 7, "ASK AT WINDOW"],
   ["Sides and Drinks", "Lemon Shake-Up Refill", 4, "ASK AT WINDOW"],
-  ["Specials", "Boneless Wings (6 pc)", 7, "HIDE"],
-  ["Specials", "Bone-In Wings (5 pc)", 10, "HIDE"],
-  ["Specials", "Chicken Drumsticks (3 pc)", 7, "HIDE"],
-  ["Specials", "Chicken Drumsticks (5 pc)", 9, "HIDE"],
+  ["Chicken and Sandwiches", "Boneless Wings (6 pc)", 7, "HIDE"],
+  ["Chicken and Sandwiches", "Bone-In Wings (5 pc)", 10, "HIDE"],
+  ["Chicken and Sandwiches", "Chicken Drumsticks (3 pc)", 7, "HIDE"],
+  ["Chicken and Sandwiches", "Chicken Drumsticks (5 pc)", 9, "HIDE"],
   ["West African Cuisine", "Peanut Sauce Chicken", 10, "ASK AT WINDOW"]
 ];
 
@@ -247,8 +249,8 @@ function setupMenu_() {
   sh.getRange(1, 5).setValue("Description (new items only)");
   // Rename old section names to match the website tabs
   if (sh.getLastRow() > 1) {
-    const secR = sh.getRange(2, 1, sh.getLastRow() - 1, 1);
-    secR.setValues(secR.getValues().map(r => [OLD_SECTIONS[r[0]] || r[0]]));
+    const secR = sh.getRange(2, 1, sh.getLastRow() - 1, 2);
+    secR.setValues(secR.getValues().map(r => [ITEM_SECTIONS[r[1]] || OLD_SECTIONS[r[0]] || (r[0] === "Specials" ? "Off the Bun" : r[0]), r[1]]));
   }
   sh.getRange(1, 1, 1, 5).setFontWeight("bold").setBackground("#1F6B57").setFontColor("#FFFFFF");
   sh.setFrozenRows(1);

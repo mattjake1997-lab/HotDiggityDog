@@ -265,7 +265,7 @@ button.dog-type.sel h4::after{content:" ✓";color:var(--red)}
 .lim-note{font-size:.78rem!important;margin:6px 0 0!important}
 .tab .ts{display:none}
 @media(max-width:1000px){.tab .tl{display:none}.tab .ts{display:inline}}
-@media(max-width:560px){.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;overflow:visible}.tab{padding:9px 6px;font-size:.92rem;text-align:center}}
+@media(max-width:560px){.tabs{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;overflow:visible}.tab{flex:0 0 calc(25% - 6px);padding:9px 2px;font-size:.84rem;text-align:center;white-space:normal;line-height:1.1}}
 @media(max-width:340px){.tab{font-size:.82rem}}
 .lim-s{width:30px;height:30px;display:grid;place-items:center;flex:none;font-size:1rem}
 .lim-key{margin:8px 0 0;font-weight:800;font-size:.85rem;color:var(--red-dark)}
@@ -343,6 +343,8 @@ footer .credit a{color:#fff;text-decoration:underline}
 .cart-fab.show{display:inline-flex}
 .overlay{position:fixed;inset:0;background:rgba(36,22,15,.6);z-index:60;display:none;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
+.lim-badge{display:inline-block;vertical-align:middle;background:var(--red);color:#fff;font-size:.72rem;font-weight:900;letter-spacing:1px;padding:2px 8px;border-radius:999px;border:2px solid var(--ink);transform:rotate(-3deg)}
+.seas{font-style:italic;font-weight:800;color:var(--red);font-size:.85em}
 .sub-pill{display:inline-block;margin:0 0 8px;background:var(--yellow);border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font-weight:900;font-size:.82rem}
 .hdc-btn{margin-top:12px;font:inherit;font-weight:900;background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:999px;padding:9px 18px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;transform:rotate(-1deg)}
 .hdc-btn:hover{transform:rotate(0) translateY(-1px)}
@@ -476,25 +478,25 @@ const COMBOS = [
   {n:2, limited:true, name:"Crispy Chicken Sandwich Combo", price:11, tops:["Mayo","Sweet and spicy slaw","Onion"], groups:[SIDE], either:true, desc:"Crispy chicken sandwich", sub:"Topped with mayo, sweet and spicy slaw, and onion"},
   {n:3, name:"BBQ Sandwich Combo", price:11, tops:["Pickles","Onion"], groups:[PROTEIN,SIDE], either:true, desc:"BBQ pulled pork or chicken sandwich", sub:"Topped with pickles and onion"},
   {n:4, name:"Mozzarella Sticks Combo", price:12, groups:[{label:"Dipping sauce", choices:[["Marinara",0],["Ranch",0]]},DRINK], desc:"Mozzarella sticks + fries with a drink", sub:"Choice of marinara or ranch"},
-  {n:5, limited:true, name:"Any Dog + Lemon Shake-Up", price:12, kind:"dog", pick:DOGS, styles:true, desc:"Any hot dog + a fresh lemon shake-up", sub:"Fresh lemons, shaken to order"}
+  {n:5, limited:true, badge:"LIMITED", name:"Any Dog + Lemon Shake-Up", price:12, kind:"dog", pick:DOGS, styles:true, desc:"Any hot dog + a fresh lemon shake-up", sub:"Fresh lemons, shaken to order"}
 ];
 
-const WING_SAUCE = {label:"Sauce", choices:[["Red Hot",0],["Sweet n Spicy",0],["BBQ",0]]};
-// TONIGHT'S SPECIALS: set "on" to true for the nights he has them, false to hide.
-// When nothing is on, the Specials tab disappears.
+// OFF THE BUN tab: truck favorites that aren't sandwiches or dogs on a bun.
+// (Kept under the name SPECIALS in the code.) The tab hides itself if everything here is hidden.
 const SPECIALS = [
-  {on:false, name:"Boneless Wings (6 pc)", price:7, img:"img/wings.jpg", groups:[WING_SAUCE], desc:"Tossed in Red Hot, Sweet n Spicy, or BBQ"},
-  {on:false, name:"Bone-In Wings (5 pc)", price:10, img:"img/wings.jpg", groups:[WING_SAUCE], desc:"Tossed in Red Hot, Sweet n Spicy, or BBQ"},
-  {on:false, name:"Chicken Drumsticks (3 pc)", price:7, img:"img/wings.jpg", desc:"Three crispy, seasoned drumsticks"},
-  {on:false, name:"Chicken Drumsticks (5 pc)", price:9, img:"img/wings.jpg", desc:"Five crispy, seasoned drumsticks"},
+  {on:true, name:"Corn Dog", price:7, desc:"Golden, crispy, and hand-held", icon:"🌭"},
+  {on:true, name:"Pork Parfait", limited:true, price:9, img:"img/parfait.jpg", groups:[PROTEIN], sub:"🐔 Or sub BBQ chicken", tops:["Sweet corn","Shredded cheese","BBQ drizzle"], desc:"Mashed potatoes layered with BBQ pulled pork, sweet corn, shredded cheese, and BBQ drizzle"},
 ];
+const WING_SAUCE = {label:"Sauce", choices:[["Red Hot",0],["Sweet n Spicy",0],["BBQ",0]]};
 const CHICKEN = [
   {name:"Chicken Tenders (3 pc)", price:7, sauces:2, meal:true, desc:"Comes with 2 sauces", icon:"🍗"},
   {name:"Chicken Tenders (5 pc)", price:9, sauces:3, meal:true, desc:"Comes with 3 sauces", icon:"🍗"},
+  {name:"Boneless Wings (6 pc)", limited:true, price:7, img:"img/wings.jpg", groups:[WING_SAUCE], desc:"Tossed in Red Hot, Sweet n Spicy, or BBQ"},
+  {name:"Bone-In Wings (5 pc)", hidden:true, price:10, img:"img/wings.jpg", groups:[WING_SAUCE], desc:"Tossed in Red Hot, Sweet n Spicy, or BBQ"},
+  {name:"Chicken Drumsticks (3 pc)", hidden:true, price:7, img:"img/wings.jpg", desc:"Three crispy, seasoned drumsticks"},
+  {name:"Chicken Drumsticks (5 pc)", hidden:true, price:9, img:"img/wings.jpg", desc:"Five crispy, seasoned drumsticks"},
   {name:"BBQ Pulled Pork or Chicken Sandwich", price:8, groups:[PROTEIN], tops:["Pickles","Diced onions"], meal:true, desc:"BBQ pulled pork or chicken topped with pickles and diced onions", icon:"🥪"},
   {name:"Crispy Chicken Sandwich", limited:true, price:8, img:"img/crispy-chicken.jpg", tops:["Tomato","Sweet and spicy slaw"], meal:true, desc:"Crispy chicken with sliced tomato and sweet and spicy slaw"},
-  {name:"Corn Dog", price:7, desc:"Golden, crispy, and hand-held", icon:"🌭"},
-  {name:"Pork Parfait", limited:true, price:9, img:"img/parfait.jpg", groups:[PROTEIN], sub:"🐔 Or sub BBQ chicken", tops:["Sweet corn","Shredded cheese","BBQ drizzle"], desc:"Mashed potatoes layered with BBQ pulled pork, sweet corn, shredded cheese, and BBQ drizzle"}
 ];
 
 const MORE = [
@@ -512,7 +514,7 @@ const SIDES = [
   {name:"Side of Cheese Sauce", price:2},
   {name:"Side of Chili Sauce", price:2},
   {name:"Drink", price:2, groups:[DRINK]},
-  {name:"Lemon Shake-Up (24 oz)", price:7, limited:true, seasonal:true},
+  {name:"Lemon Shake-Up (24 oz)", price:7, limited:true, seasonal:true, note:"(seasonal)"},
   {name:"Lemon Shake-Up Refill", price:4, limited:true, seasonal:true}
 ];
 </script>
@@ -574,10 +576,11 @@ const SIDES = [
       <button class="tab active" data-t="dogs" role="tab"><span class="tl">Custom Dogs</span><span class="ts">Dogs</span></button>
       <button class="tab" data-t="chicken" role="tab"><span class="tl">Chicken and Sandwiches</span><span class="ts">Chicken</span></button>
       <button class="tab" data-t="loaded" role="tab"><span class="tl">Nachos and Fries</span><span class="ts">Nachos</span></button>
+      <button class="tab" data-t="specials" role="tab"><span class="tl">Off the Bun</span><span class="ts">Off the Bun</span></button>
       <button class="tab" data-t="combos" role="tab"><span class="tl">Combos</span><span class="ts">Combos</span></button>
       <button class="tab" data-t="sides" role="tab"><span class="tl">Sides and Drinks</span><span class="ts">Sides</span></button>
       <button class="tab" data-t="african" role="tab"><span class="tl">West African Cuisine</span><span class="ts">African</span></button>
-      <button class="tab tab-special" data-t="specials" role="tab">⭐ Tonight's Specials</button>
+
     </div>
 
     <div class="panel active" id="p-dogs">
@@ -608,7 +611,7 @@ const SIDES = [
 
     <div class="panel" id="p-chicken">
       <div class="board">
-        <div class="board-title">Chicken, Sandwiches and More</div>
+        <div class="board-title">Chicken, Wings and Sandwiches</div>
         <p class="board-sub">Make any of these a meal with fries and a drink for <b>+$4</b>.</p>
         <div id="chickenList"></div><div id="x-chicken"></div>
         <div class="pill-row"><span>Sauces: honey mustard, BBQ, ketchup, ranch, hot sauce</span><span>Extra sauce 50¢ each</span></div>
@@ -633,8 +636,8 @@ const SIDES = [
 
     <div class="panel" id="p-specials">
       <div class="board">
-        <div class="board-title">Tonight's Specials</div>
-        <p class="board-sub">Here for a limited time. Get them while they last!</p>
+        <div class="board-title">Off the Bun</div>
+        <p class="board-sub">Not everything needs a bun. Truck favorites served up a different way.</p>
         <div id="specialList"></div><div id="x-specials"></div>
       </div>
     </div>
@@ -906,7 +909,7 @@ $("#sigGrid").innerHTML=SIGV().map(d=>`<div class="sig">
 $("#peekStrip").innerHTML=`<div class="spicy-box">${SIGV().map((d,i)=>d.spicy?nameChip(d,i):"").join("")}</div><div class="mild-box">${SIGV().map((d,i)=>d.spicy?"":nameChip(d,i)).join("")}</div>`;
 const XC=EXTRA.filter(e=>e.sec==="combos");
 $("#comboList").innerHTML=COMBOS.filter(v).map(c=>`<div class="combo"><div class="n">${c.n}</div>
-  <div><h4>${c.either?c.desc+" + your pick:":c.desc}</h4>${c.either?`<div class="either"><span>Chips + a drink</span><i>OR</i><span>Fries (no drink)</span></div>`:""}<small>${c.sub}</small>${addBtn(c,"Customize")}</div><span class="ptag red">$${c.price}</span></div>`).join("")
+  <div><h4>${c.either?c.desc+" + your pick:":c.desc}${c.badge?` <span class="lim-badge">${c.badge}</span>`:""}</h4>${c.either?`<div class="either"><span>Chips + a drink</span><i>OR</i><span>Fries (no drink)</span></div>`:""}<small>${c.sub}</small>${addBtn(c,"Customize")}</div><span class="ptag red">$${c.price}</span></div>`).join("")
   +XC.map((c,i)=>`<div class="combo"><div class="n">${COMBOS.filter(v).length+i+1}</div><div><h4>${c.name} ${NEWB(c)}</h4>${c.desc?`<small>${c.desc}</small>`:""}${addBtn(c)}</div><span class="ptag red">$${pr(c.price)}</span></div>`).join("");
 const rows=list=>list.map(m=>`<div class="row-item">${m.img?`<img class="thumb" src="${m.img}" alt="" loading="lazy">`:`<div class="thumb blank">${m.icon||"🌭"}</div>`}
   <div><h4>${m.name} ${NEWB(m)}</h4><p>${m.desc}</p>${m.sub?`<span class="sub-pill">${m.sub}</span>`:""}${addBtn(m)}</div><span class="ptag">$${pr(m.price)}</span></div>`).join("");
@@ -918,7 +921,7 @@ const SPEC_ON=SPECIALS.filter(s=>s.on&&!s.hidden).concat(EXTRA.filter(e=>e.sec==
 $("#specialList").innerHTML=rows(SPEC_ON.filter(e=>!e.sec));
 const st=document.querySelector('.tab[data-t="specials"]');if(st)st.style.display=SPEC_ON.length?"":"none";
 if(!SPEC_ON.length&&$("#p-specials").classList.contains("active"))document.querySelector('.tab[data-t="dogs"]').click();
-const sideLine=s=>`<div class="side-line"><span>${s.name} ${NEWB(s)}</span><span class="dots"></span><span class="ptag sm">$${(+s.price)%1?(+s.price).toFixed(2):s.price}</span>${s.limited?`<span class="lim-s" title="Limited: ask at the window">⏳</span>`:ORDER?`<button class="add-s add" data-k="${reg(s)}" aria-label="Add ${esc(s.name)}">+</button>`:""}</div>`;
+const sideLine=s=>`<div class="side-line"><span>${s.name}${s.note?` <em class="seas">${s.note}</em>`:""} ${NEWB(s)}</span><span class="dots"></span><span class="ptag sm">$${(+s.price)%1?(+s.price).toFixed(2):s.price}</span>${s.limited?`<span class="lim-s" title="Limited: ask at the window">⏳</span>`:ORDER?`<button class="add-s add" data-k="${reg(s)}" aria-label="Add ${esc(s.name)}">+</button>`:""}</div>`;
 const SV=SIDES.filter(v).concat(X("sides"));
 $("#sideList").innerHTML=SV.map(sideLine).join("")+(SV.some(s=>s.limited)?`<p class="lim-key">⏳ = seasonal or limited, ask at the window</p>`:"");
 
@@ -1139,7 +1142,7 @@ function applyMenu(menu){
     const st=String(r.status||"").toUpperCase();if(st.startsWith("HIDE"))return;
     const p=parseFloat(String(r.price||"").replace(/[^0-9.]/g,""));if(isNaN(p)||p<=0)return;
     const sec=String(r.section||"").toLowerCase();
-    const where=/dog/.test(sec)?"dogs":/chicken|sandwich/.test(sec)?"chicken":/combo/.test(sec)?"combos":/special|wing/.test(sec)?"specials":/african|kasant/.test(sec)?"african":/side|drink/.test(sec)?"sides":"loaded";
+    const where=/dog/.test(sec)?"dogs":/chicken|sandwich/.test(sec)?"chicken":/combo/.test(sec)?"combos":/special|bun|other|extra/.test(sec)?"specials":/african|kasant/.test(sec)?"african":/side|drink/.test(sec)?"sides":"loaded";
     const it={sec:where,isNew:true,name:name.replace(/[<>"]/g,"").slice(0,80),price:p,desc:String(r.desc||"").replace(/[<>"]/g,"").slice(0,200),limited:st.startsWith("ASK")};
     it.icon={chicken:"🍗",loaded:"🍟",specials:"🔥"}[where]||"⭐";
     if(where==="chicken")it.meal=true;
