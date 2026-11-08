@@ -267,6 +267,14 @@ button.dog-type.sel h4::after{content:" ✓";color:var(--red)}
 @media(max-width:1000px){.tab .tl{display:none}.tab .ts{display:inline}}
 @media(max-width:560px){.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;overflow:visible}.tab{padding:9px 6px;font-size:.92rem;text-align:center}}
 @media(max-width:340px){.tab{font-size:.82rem}}
+.lim-s{width:30px;height:30px;display:grid;place-items:center;flex:none;font-size:1rem}
+.lim-key{margin:8px 0 0;font-weight:800;font-size:.85rem;color:var(--red-dark)}
+.today{background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:22px;box-shadow:6px 6px 0 var(--red);padding:18px 22px;margin:0 auto 24px;max-width:640px;text-align:center}
+.today-tag{font-family:Bangers,Impact,sans-serif;font-size:1.5rem;letter-spacing:1px;color:var(--red)}
+.today-where{font-weight:900;font-size:1.35rem;margin:4px 0 2px}
+.today-when{font-weight:700;color:var(--muted);margin-bottom:10px}
+.closed-banner{max-width:720px;margin:-6px auto 24px;background:var(--ink);color:var(--yellow);border-radius:16px;padding:12px 18px;text-align:center;font-weight:900}
+body.ordering-closed .add,body.ordering-closed #byoAdd,body.ordering-closed .cart-fab,body.ordering-closed .order-link{display:none!important}
 /* gallery */
 .gallery{background:var(--ink);color:#fff;position:relative;overflow:hidden}
 .gallery .section-head h2{color:var(--yellow)}
@@ -443,10 +451,10 @@ const BYO = {name:"Build Your Own Dog", price:7, kind:"dog", pick:DOGS, tops:[],
 
 const COMBOS = [
   {n:1, name:"Any Hot Dog Combo", price:10, kind:"dog", pick:DOGS, styles:true, groups:[SIDE], either:true, desc:"Any hot dog", sub:"Sub chili fries for +$2", img:"img/lineup.jpg"},
-  {n:2, name:"Crispy Chicken Sandwich Combo", price:11, tops:["Mayo","Sweet and spicy slaw","Onion"], groups:[SIDE], either:true, desc:"Crispy chicken sandwich", sub:"Topped with mayo, sweet and spicy slaw, and onion"},
+  {n:2, limited:true, name:"Crispy Chicken Sandwich Combo", price:11, tops:["Mayo","Sweet and spicy slaw","Onion"], groups:[SIDE], either:true, desc:"Crispy chicken sandwich", sub:"Topped with mayo, sweet and spicy slaw, and onion"},
   {n:3, name:"BBQ Sandwich Combo", price:11, tops:["Pickles","Onion"], groups:[PROTEIN,SIDE], either:true, desc:"BBQ pulled pork or chicken sandwich", sub:"Topped with pickles and onion"},
   {n:4, name:"Mozzarella Sticks Combo", price:12, groups:[{label:"Dipping sauce", choices:[["Marinara",0],["Ranch",0]]},DRINK], desc:"Mozzarella sticks + fries with a drink", sub:"Choice of marinara or ranch"},
-  {n:5, name:"Any Dog + Lemon Shake-Up", price:12, kind:"dog", pick:DOGS, styles:true, desc:"Any hot dog + a fresh lemon shake-up", sub:"Fresh lemons, shaken to order"}
+  {n:5, limited:true, name:"Any Dog + Lemon Shake-Up", price:12, kind:"dog", pick:DOGS, styles:true, desc:"Any hot dog + a fresh lemon shake-up", sub:"Fresh lemons, shaken to order"}
 ];
 
 const WING_SAUCE = {label:"Sauce", choices:[["Red Hot",0],["Sweet n Spicy",0],["BBQ",0]]};
@@ -462,9 +470,9 @@ const CHICKEN = [
   {name:"Chicken Tenders (3 pc)", price:7, sauces:2, meal:true, desc:"Comes with 2 sauces", icon:"🍗"},
   {name:"Chicken Tenders (5 pc)", price:9, sauces:3, meal:true, desc:"Comes with 3 sauces", icon:"🍗"},
   {name:"BBQ Pulled Pork or Chicken Sandwich", price:8, groups:[PROTEIN], tops:["Pickles","Diced onions"], meal:true, desc:"BBQ pulled pork or chicken topped with pickles and diced onions", icon:"🥪"},
-  {name:"Crispy Chicken Sandwich", price:8, img:"img/crispy-chicken.jpg", tops:["Tomato","Sweet and spicy slaw"], meal:true, desc:"Crispy chicken with sliced tomato and sweet and spicy slaw"},
+  {name:"Crispy Chicken Sandwich", limited:true, price:8, img:"img/crispy-chicken.jpg", tops:["Tomato","Sweet and spicy slaw"], meal:true, desc:"Crispy chicken with sliced tomato and sweet and spicy slaw"},
   {name:"Corn Dog", price:7, desc:"Golden, crispy, and hand-held", icon:"🌭"},
-  {name:"Pork Parfait", price:9, img:"img/parfait.jpg", tops:["Sweet corn","Shredded cheese","BBQ drizzle"], desc:"Mashed potatoes layered with BBQ pulled pork, sweet corn, shredded cheese, and BBQ drizzle"}
+  {name:"Pork Parfait", limited:true, price:9, img:"img/parfait.jpg", tops:["Sweet corn","Shredded cheese","BBQ drizzle"], desc:"Mashed potatoes layered with BBQ pulled pork, sweet corn, shredded cheese, and BBQ drizzle"}
 ];
 
 const MORE = [
@@ -482,8 +490,8 @@ const SIDES = [
   {name:"Side of Cheese Sauce", price:2},
   {name:"Side of Chili Sauce", price:2},
   {name:"Drink", price:2, groups:[DRINK]},
-  {name:"Lemon Shake-Up (24 oz)", price:7},
-  {name:"Lemon Shake-Up Refill", price:4}
+  {name:"Lemon Shake-Up (24 oz)", price:7, limited:true, seasonal:true},
+  {name:"Lemon Shake-Up Refill", price:4, limited:true, seasonal:true}
 ];
 </script>
 
@@ -537,6 +545,7 @@ const SIDES = [
       <h2 class="menu-title">The Menu</h2>
       <p id="menuSub">Tap a section, then add items to order ahead for pickup.</p>
     </div>
+    <div class="closed-banner" id="closedBanner" style="display:none"></div>
     <a class="btn btn-red square-cta" id="squareCta" target="_blank" rel="noopener" style="display:none">Order ahead on Square →</a>
     <div class="tabs" role="tablist">
       <button class="tab active" data-t="dogs" role="tab"><span class="tl">Custom Dogs</span><span class="ts">Dogs</span></button>
@@ -647,6 +656,12 @@ const SIDES = [
     <div class="section-head">
       <h2>Where we'll be</h2>
       <p>We roll all over town. Here's where to catch us.</p>
+    </div>
+    <div class="today" id="today" style="display:none">
+      <div class="today-tag">📍 Today's spot</div>
+      <div class="today-where" id="todayWhere"></div>
+      <div class="today-when" id="todayWhen"></div>
+      <a class="btn btn-light btn-sm" id="todayMap" target="_blank" rel="noopener">Open in Maps</a>
     </div>
     <div class="sched" id="sched"></div>
     <p class="fb-note">Daily locations are posted on Facebook: <a id="fbLink" target="_blank" rel="noopener">Hot Diggity Dog, Just Doggin Around</a></p>
@@ -851,7 +866,7 @@ $("#chickenList").innerHTML=rows(CHICKEN);
 const SPEC_ON=SPECIALS.filter(s=>s.on);
 if(SPEC_ON.length)$("#specialList").innerHTML=rows(SPEC_ON);
 else{document.querySelector('.tab[data-t="specials"]').remove();$("#p-specials").remove()}
-$("#sideList").innerHTML=SIDES.map(s=>`<div class="side-line"><span>${s.name}</span><span class="dots"></span><span class="ptag sm">$${s.price}</span>${ORDER?`<button class="add-s add" data-k="${reg(s)}" aria-label="Add ${esc(s.name)}">+</button>`:""}</div>`).join("");
+$("#sideList").innerHTML=SIDES.map(s=>`<div class="side-line"><span>${s.name}</span><span class="dots"></span><span class="ptag sm">$${s.price}</span>${s.limited?`<span class="lim-s" title="${s.seasonal?"Seasonal":"Limited"}: ask at the window">⏳</span>`:ORDER?`<button class="add-s add" data-k="${reg(s)}" aria-label="Add ${esc(s.name)}">+</button>`:""}</div>`).join("")+(SIDES.some(s=>s.limited)?`<p class="lim-key">⏳ = seasonal or limited, ask at the window</p>`:"");
 
 /* customizer */
 let cz=null;
@@ -1030,6 +1045,30 @@ $("#sendOrder").onclick=async()=>{
   cart=[];renderCart();
   renderReceipt(r);showView("receipt");
 };
+/* schedule */
+$("#sched").innerHTML=(SITE.schedule||[]).map(s=>`<div class="stop"><div class="day">${s.day}</div><div class="where">${s.where}</div><div class="when">${s.when}</div></div>`).join("");
+/* live switches from the Google Sheet "Settings" tab */
+const yes=v=>/^(on|yes|true|open)$/i.test(String(v||"").trim());
+if(SHEET&&ORDER){
+  fetch(SHEET).then(r=>r.json()).then(j=>{
+    const s=j&&j.settings;if(!s)return;
+    if(s.onlineOrdering!==undefined&&!yes(s.onlineOrdering)){
+      document.body.classList.add("ordering-closed");
+      const b=$("#closedBanner");b.textContent=s.closedMessage||"Online ordering is closed right now. Come see us at the window!";b.style.display="block";
+      $("#menuSub").textContent="Here's our menu. Order at the window.";
+    }
+    if(s.payNow!==undefined&&!yes(s.payNow)&&$("#payChoice")){
+      $("#payChoice").style.display="none";
+      const w=document.querySelector('input[name=payWay][value=window]');if(w){w.checked=true;w.dispatchEvent(new Event("change"))}
+    }
+    if(s.todayLocation&&String(s.todayLocation).trim()){
+      $("#todayWhere").textContent=s.todayLocation;
+      $("#todayWhen").textContent=s.todayHours||"";
+      $("#todayMap").href="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(s.todayLocation);
+      $("#today").style.display="block";
+    }
+  }).catch(()=>{});
+}
 /* back from Square checkout: ?paid=ORDERNUMBER */
 (()=>{const m=location.search.match(/[?&]paid=([^&]+)/);if(!m||!lastReceipt)return;
   if(String(lastReceipt.num)===decodeURIComponent(m[1])){

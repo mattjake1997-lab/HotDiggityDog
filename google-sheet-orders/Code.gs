@@ -14,6 +14,17 @@ const FIRST_ORDER_NUMBER = 101;
 const HEADERS = ["Order #", "Received", "Status", "Name", "Phone", "Items", "Notes", "Total", "Payment"];
 const STATUSES = ["NEW", "MAKING", "READY", "PICKED UP", "CANCELED"];
 
+// The "Settings" tab: the owner changes these from the Google Sheets app.
+const SETTINGS_SHEET = "Settings";
+const SETTINGS = [
+  // [label shown in column A, key the website reads, starting value, dropdown choices or null]
+  ["Online ordering", "onlineOrdering", "ON", ["ON", "OFF"]],
+  ["Pay now with card", "payNow", "ON", ["ON", "OFF"]],
+  ["Today's location", "todayLocation", "", null],
+  ["Today's hours", "todayHours", "", null],
+  ["Message when ordering is OFF", "closedMessage", "Online ordering is closed right now. Come see us at the window!", null],
+];
+
 /** Run once: builds the Orders tab with headers, status dropdown and colors. */
 function setup() {
   const sh = getSheet_();
@@ -26,6 +37,7 @@ function setup() {
   sh.setConditionalFormatRules(rules);
   sh.setColumnWidth(6, 380);
   sh.getRange("F:F").setWrap(true);
+  setupSettings_();
   // Ask once for email permission so new-order emails work.
   if (NOTIFY_EMAIL) MailApp.getRemainingDailyQuota();
 }
@@ -55,9 +67,47 @@ function doPost(e) {
   }
 }
 
-/** Lets you open the Web app URL in a browser to check it's live. */
+/** The website reads the Settings tab through this. */
 function doGet() {
-  return json_({ ok: true, message: "Hot Diggity Dog order receiver is running." });
+  const settings = {};
+  try {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(SETTINGS_SHEET);
+    if (sh) {
+      const vals = sh.getRange(2, 1, SETTINGS.length, 2).getDisplayValues();
+      SETTINGS.forEach(([label, key], i) => { settings[key] = vals[i][1]; });
+    }
+  } catch (e) {}
+  return json_({ ok: true, message: "Hot Diggity Dog order receiver is running.", settings: settings });
+}
+
+function setupSettings_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(SETTINGS_SHEET);
+  if (!sh) sh = ss.insertSheet(SETTINGS_SHEET);
+  sh.getRange(1, 1, 1, 3).setValues([["Setting", "Value", "How to use"]])
+    .setFontWeight("bold").setBackground("#1F6B57").setFontColor("#FFFFFF");
+  const help = {
+    onlineOrdering: "OFF hides all order buttons on the website",
+    payNow: "OFF = customers can only pay at the window",
+    todayLocation: "Type an address or place. Leave blank to hide",
+    todayHours: "Example: 11am - 2pm",
+    closedMessage: "Shown on the website when ordering is OFF",
+  };
+  SETTINGS.forEach(([label, key, start, choices], i) => {
+    const row = i + 2;
+    sh.getRange(row, 1).setValue(label).setFontWeight("bold");
+    const cell = sh.getRange(row, 2);
+    if (cell.getDisplayValue() === "") cell.setValue(start);
+    if (choices) cell.setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(choices, true).build());
+    sh.getRange(row, 3).setValue(help[key]).setFontColor("#6B5546");
+  });
+  sh.setColumnWidth(1, 210); sh.setColumnWidth(2, 260); sh.setColumnWidth(3, 330);
+  const rules = [
+    SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo("ON").setBackground("#C9EBD9").setRanges([sh.getRange("B2:B3")]).build(),
+    SpreadsheetApp.newConditionalFormatRule().whenTextEqualTo("OFF").setBackground("#F4C7C7").setRanges([sh.getRange("B2:B3")]).build(),
+  ];
+  sh.setConditionalFormatRules(rules);
+  sh.setFrozenRows(1);
 }
 
 function getSheet_() {
