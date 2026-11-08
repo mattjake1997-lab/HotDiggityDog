@@ -14,6 +14,10 @@ const FIRST_ORDER_NUMBER = 101;
 const HEADERS = ["Order #", "Received", "Status", "Name", "Phone", "Items", "Notes", "Total", "Payment"];
 const STATUSES = ["NEW", "MAKING", "READY", "PICKED UP", "CANCELED"];
 
+// The "This Week" tab: where the truck will be. Blank rows don't show on the website.
+const WEEK_SHEET = "This Week";
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
 // The "Settings" tab: the owner changes these from the Google Sheets app.
 const SETTINGS_SHEET = "Settings";
 const SETTINGS = [
@@ -38,6 +42,7 @@ function setup() {
   sh.setColumnWidth(6, 380);
   sh.getRange("F:F").setWrap(true);
   setupSettings_();
+  setupWeek_();
   // Ask once for email permission so new-order emails work.
   if (NOTIFY_EMAIL) MailApp.getRemainingDailyQuota();
 }
@@ -77,7 +82,29 @@ function doGet() {
       SETTINGS.forEach(([label, key], i) => { settings[key] = vals[i][1]; });
     }
   } catch (e) {}
-  return json_({ ok: true, message: "Hot Diggity Dog order receiver is running.", settings: settings });
+  const week = [];
+  try {
+    const wk = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(WEEK_SHEET);
+    if (wk) {
+      wk.getRange(2, 1, DAYS.length, 3).getDisplayValues().forEach(([day, where, hours]) => {
+        if (String(where).trim()) week.push({ day: day, where: where, when: hours });
+      });
+    }
+  } catch (e) {}
+  return json_({ ok: true, message: "Hot Diggity Dog order receiver is running.", settings: settings, week: week });
+}
+
+function setupWeek_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(WEEK_SHEET);
+  if (!sh) sh = ss.insertSheet(WEEK_SHEET);
+  sh.getRange(1, 1, 1, 3).setValues([["Day", "Where (leave blank if not out)", "Hours"]])
+    .setFontWeight("bold").setBackground("#D62828").setFontColor("#FFFFFF");
+  DAYS.forEach((d, i) => sh.getRange(i + 2, 1).setValue(d).setFontWeight("bold"));
+  sh.getRange(10, 1).setValue("Tip: update this at the start of each week. Blank days don't show on the website.")
+    .setFontColor("#6B5546").setFontStyle("italic");
+  sh.setColumnWidth(1, 120); sh.setColumnWidth(2, 320); sh.setColumnWidth(3, 160);
+  sh.setFrozenRows(1);
 }
 
 function setupSettings_() {

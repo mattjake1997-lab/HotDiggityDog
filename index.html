@@ -276,6 +276,9 @@ button.dog-type.sel h4::after{content:" ✓";color:var(--red)}
 .closed-banner{max-width:720px;margin:-6px auto 24px;background:var(--ink);color:var(--yellow);border-radius:16px;padding:12px 18px;text-align:center;font-weight:900}
 body.ordering-closed .add,body.ordering-closed #byoAdd,body.ordering-closed .cart-fab,body.ordering-closed .order-link{display:none!important}
 body.ordering-closed .limited,body.ordering-closed .lim-s,body.ordering-closed .lim-key,body.ordering-closed .lim-note{display:none!important}
+.sched{display:flex!important;flex-wrap:wrap;justify-content:center;gap:14px}
+.sched .stop{flex:0 1 250px;text-align:center}
+.sched-head{text-align:center;font-family:Bangers,Impact,sans-serif;font-weight:400;font-size:1.9rem;letter-spacing:1.5px;color:var(--yellow);margin:0 0 12px}
 /* gallery */
 .gallery{background:var(--ink);color:#fff;position:relative;overflow:hidden}
 .gallery .section-head h2{color:var(--yellow)}
@@ -404,12 +407,9 @@ const SITE = {
     limited: true   // true = shows "Limited · Ask at the window" instead of an Add button
   },
 
-  // WHERE WE'LL BE: edit weekly
-  schedule: [
-    { day: "Mon – Fri", where: "Lunch rush stops", when: "Check Facebook for today's spot" },
-    { day: "Weekends", where: "Events and festivals", when: "Posted each week on Facebook" },
-    { day: "Any day", where: "Your event", when: "Private bookings available" }
-  ],
+  // WHERE WE'LL BE: now comes from the Google Sheet "This Week" tab.
+  // These only show if the sheet can't be reached; leave empty to show nothing.
+  schedule: [],
 
   // ONLINE ORDERING
   // enabled: false hides all ordering.
@@ -664,6 +664,7 @@ const SIDES = [
       <div class="today-when" id="todayWhen"></div>
       <a class="btn btn-light btn-sm" id="todayMap" target="_blank" rel="noopener">Open in Maps</a>
     </div>
+    <h3 class="sched-head" id="schedHead" style="display:none">This week</h3>
     <div class="sched" id="sched"></div>
     <p class="fb-note">Daily locations are posted on Facebook: <a id="fbLink" target="_blank" rel="noopener">Hot Diggity Dog, Just Doggin Around</a></p>
   </div>
@@ -1047,13 +1048,18 @@ $("#sendOrder").onclick=async()=>{
   renderReceipt(r);showView("receipt");
 };
 /* schedule */
-$("#sched").innerHTML=(SITE.schedule||[]).map(s=>`<div class="stop"><div class="day">${s.day}</div><div class="where">${s.where}</div><div class="when">${s.when}</div></div>`).join("");
+function drawSched(list){
+  $("#sched").innerHTML=(list||[]).map(s=>`<div class="stop"><div class="day">${esc(s.day)}</div><div class="where">${esc(s.where)}</div>${s.when?`<div class="when">${esc(s.when)}</div>`:""}</div>`).join("");
+  $("#schedHead").style.display=(list&&list.length)?"block":"none";
+}
+drawSched(SITE.schedule);
 /* live switches from the Google Sheet "Settings" tab */
 const yes=v=>/^(on|yes|true|open)$/i.test(String(v||"").trim());
-if(SHEET&&ORDER){
+if(SHEET){
   fetch(SHEET).then(r=>r.json()).then(j=>{
+    if(j&&Array.isArray(j.week))drawSched(j.week);
     const s=j&&j.settings;if(!s)return;
-    if(s.onlineOrdering!==undefined&&!yes(s.onlineOrdering)){
+    if(ORDER&&s.onlineOrdering!==undefined&&!yes(s.onlineOrdering)){
       document.body.classList.add("ordering-closed");
       const msg=String(s.closedMessage||"").trim();
       if(msg){const b=$("#closedBanner");b.textContent=msg;b.style.display="block"}
