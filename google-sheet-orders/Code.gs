@@ -87,6 +87,8 @@ const SETTINGS = [
 function onOpen() {
   SpreadsheetApp.getUi().createMenu("🌭 Hot Diggity Dog")
     .addItem("Reset orders (start over at #101)", "resetOrders")
+    .addSeparator()
+    .addItem("Fix / update the sheet (Matt)", "setup")
     .addToUi();
 }
 
