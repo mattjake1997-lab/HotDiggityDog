@@ -279,6 +279,8 @@ body.ordering-closed .limited,body.ordering-closed .lim-s,body.ordering-closed .
 .sched{display:flex!important;flex-wrap:wrap;justify-content:center;gap:14px}
 .sched .stop{flex:0 1 250px;text-align:center}
 .sched-head{text-align:center;font-family:Bangers,Impact,sans-serif;font-weight:400;font-size:1.9rem;letter-spacing:1.5px;color:var(--yellow);margin:0 0 12px}
+.clear-cart{display:block;margin:-6px 0 14px auto;background:none;border:2px solid var(--red);color:var(--red);font:800 .85rem Nunito,sans-serif;border-radius:999px;padding:6px 14px;cursor:pointer}
+.clear-cart.armed{background:var(--red);color:#fff}
 /* gallery */
 .gallery{background:var(--ink);color:#fff;position:relative;overflow:hidden}
 .gallery .section-head h2{color:var(--yellow)}
@@ -713,6 +715,7 @@ const SIDES = [
     <div class="sheet-head"><h2>Your order</h2><button class="x closeCart" aria-label="Close">×</button></div>
     <div id="cartLines"></div>
     <div class="total"><span>Total</span><span id="cartTotal">$0.00</span></div>
+    <button type="button" class="clear-cart" id="clearCart">🗑️ Clear order</button>
     <div id="checkout">
       <div class="field"><label for="oName">Name for the order</label><input id="oName" placeholder="Jordan"></div>
       <div class="field"><label for="oPhone">Your phone <span style="font-weight:700;color:var(--muted)">(we'll text you when it's ready)</span></label><input id="oPhone" type="tel" inputmode="tel" placeholder="(812) 555-0142"></div>
@@ -963,6 +966,7 @@ function renderCart(){
     <div class="qty"><button data-i="${i}" data-d="-1" aria-label="Remove one">−</button><span>${c.qty}</span><button data-i="${i}" data-d="1" aria-label="Add one">+</button></div></div>`).join(""):`<p class="empty">Your order is empty.</p>`;
   document.querySelectorAll("#cartLines .qty button").forEach(b=>b.onclick=()=>{const c=cart[b.dataset.i];c.qty+=+b.dataset.d;if(c.qty<1)cart.splice(b.dataset.i,1);renderCart()});
   $("#checkout").style.display=cart.length?"block":"none";
+  $("#clearCart").style.display=cart.length?"block":"none";
 }
 const showView=v=>{$("#cartView").style.display=v==="cart"?"block":"none";$("#receiptView").style.display=v==="receipt"?"block":"none"};
 const closeOverlay=()=>$("#overlay").classList.remove("open");
@@ -971,6 +975,13 @@ $("#cartFab").onclick=()=>{
   $("#overlay").classList.add("open");
 };
 document.querySelectorAll(".closeCart").forEach(b=>b.onclick=closeOverlay);
+let clearArmed=null;
+$("#clearCart").onclick=()=>{
+  const b=$("#clearCart");
+  if(!clearArmed){b.classList.add("armed");b.textContent="Tap again to clear everything";clearArmed=setTimeout(()=>{clearArmed=null;b.classList.remove("armed");b.textContent="🗑️ Clear order"},3000);return}
+  clearTimeout(clearArmed);clearArmed=null;b.classList.remove("armed");b.textContent="🗑️ Clear order";
+  cart=[];renderCart();closeOverlay();toast("Order cleared");
+};
 $("#overlay").onclick=e=>{if(e.target.id==="overlay")closeOverlay()};
 ["oName","oPhone"].forEach(id=>$("#"+id).addEventListener("input",()=>$("#oErr").textContent=""));
 

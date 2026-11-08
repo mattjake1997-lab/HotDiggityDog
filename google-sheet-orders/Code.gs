@@ -29,6 +29,39 @@ const SETTINGS = [
   ["Message when ordering is OFF", "closedMessage", "Online ordering is closed right now. Come see us at the window!", null],
 ];
 
+/** Adds a "Hot Diggity Dog" menu to the sheet (on a computer). */
+function onOpen() {
+  SpreadsheetApp.getUi().createMenu("🌭 Hot Diggity Dog")
+    .addItem("Reset orders (start over at #101)", "resetOrders")
+    .addToUi();
+}
+
+/** Moves every order to the "Archive" tab, clears Orders, and restarts numbering at #101. */
+function resetOrders() {
+  const ui = SpreadsheetApp.getUi();
+  const ok = ui.alert("Reset orders?",
+    "All current orders will be moved to the Archive tab and order numbers will start again at #" + FIRST_ORDER_NUMBER + ".",
+    ui.ButtonSet.OK_CANCEL);
+  if (ok !== ui.Button.OK) return;
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = getSheet_();
+  const rows = sh.getLastRow() - 1;
+  if (rows > 0) {
+    let ar = ss.getSheetByName("Archive");
+    if (!ar) {
+      ar = ss.insertSheet("Archive");
+      ar.appendRow(["Archived on"].concat(HEADERS));
+      ar.getRange(1, 1, 1, HEADERS.length + 1).setFontWeight("bold").setBackground("#6B5546").setFontColor("#FFFFFF");
+      ar.setFrozenRows(1);
+    }
+    const data = sh.getRange(2, 1, rows, HEADERS.length).getValues();
+    const stamp = new Date();
+    ar.getRange(ar.getLastRow() + 1, 1, rows, HEADERS.length + 1).setValues(data.map(r => [stamp].concat(r)));
+    sh.deleteRows(2, rows);
+  }
+  ui.alert("Done", "Orders cleared. The next order will be #" + FIRST_ORDER_NUMBER + ".", ui.ButtonSet.OK);
+}
+
 /** Run once: builds the Orders tab with headers, status dropdown and colors. */
 function setup() {
   const sh = getSheet_();
