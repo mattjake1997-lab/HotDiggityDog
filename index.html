@@ -343,6 +343,13 @@ footer .credit a{color:#fff;text-decoration:underline}
 .cart-fab.show{display:inline-flex}
 .overlay{position:fixed;inset:0;background:rgba(36,22,15,.6);z-index:60;display:none;align-items:flex-end;justify-content:center}
 .overlay.open{display:flex}
+.hdc-btn{margin-top:12px;font:inherit;font-weight:900;background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:999px;padding:9px 18px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;transform:rotate(-1deg)}
+.hdc-btn:hover{transform:rotate(0) translateY(-1px)}
+.hdc-sheet{max-width:640px}
+.hdc-note{margin:0 0 10px;font-weight:800;color:var(--muted)}
+.hdc-img{display:block;width:100%;height:auto;border-radius:12px;border:3px solid var(--ink)}
+.hdc-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.hdc-btns .btn{text-align:center;justify-content:center}
 .sheet{background:var(--cream);width:100%;max-width:580px;max-height:92vh;overflow:auto;border-radius:24px 24px 0 0;padding:22px;border:3px solid var(--ink)}
 @media(min-width:700px){.overlay{align-items:center}.sheet{border-radius:24px}}
 .sheet-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -558,6 +565,7 @@ const SIDES = [
     <div class="section-head">
       <h2 class="menu-title">The Menu</h2>
       <p id="menuSub">Tap a section, then add items to order ahead for pickup.</p>
+      <button type="button" class="hdc-btn" id="hdcOpen">🌭 Hot Dog Cart menu</button>
     </div>
     <div class="closed-banner" id="closedBanner" style="display:none"></div>
     <a class="btn btn-red square-cta" id="squareCta" target="_blank" rel="noopener" style="display:none">Order ahead on Square →</a>
@@ -721,6 +729,15 @@ const SIDES = [
 </footer>
 
 <button class="btn btn-red cart-fab" id="cartFab"><img src="img/mascot.png" alt=""><span id="fabText">Your order</span></button>
+
+<div class="overlay" id="hdcOverlay" role="dialog" aria-modal="true" aria-label="Hot dog cart menu">
+  <div class="sheet hdc-sheet">
+    <div class="sheet-head"><h2>Hot Dog Cart Menu</h2><button class="x" id="hdcClose" aria-label="Close">×</button></div>
+    <p class="hdc-note">Cart prices. Order and pay right at the cart.</p>
+    <img class="hdc-img" data-src="img/cart-menu.jpg" alt="Hot dog cart menu. Any dog $5 with 8 styles or build your own, BBQ pulled pork or chicken sandwich $7 or $9 combo, nachos $6, loaded nachos $8, chips, soda and hot cocoa $2.">
+    <div class="hdc-btns"><a class="btn btn-red" href="cart.html">Open full page</a><a class="btn btn-light" href="cart-menu.pdf" download>Download PDF</a></div>
+  </div>
+</div>
 
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Your order">
   <div class="sheet">
@@ -909,6 +926,16 @@ $("#sideList").innerHTML=SV.map(sideLine).join("")+(SV.some(s=>s.limited)?`<p cl
   updateDropLabel();
 }
 drawMenu();
+
+/* hot dog cart menu pop-up */
+(function(){
+  const o=$("#hdcOverlay"),img=o.querySelector(".hdc-img");
+  const close=()=>{o.classList.remove("open");document.body.style.overflow=""};
+  $("#hdcOpen").onclick=()=>{if(!img.src)img.src=img.dataset.src;o.classList.add("open");document.body.style.overflow="hidden"};
+  $("#hdcClose").onclick=close;
+  o.addEventListener("click",e=>{if(e.target===o)close()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&o.classList.contains("open"))close()});
+})();
 
 /* customizer */
 let cz=null;
