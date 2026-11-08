@@ -725,7 +725,7 @@ const SIDES = [
     <button type="button" class="clear-cart" id="clearCart">🗑️ Clear order</button>
     <div id="checkout">
       <div class="field"><label for="oName">Name for the order</label><input id="oName" placeholder="Jordan"></div>
-      <div class="field"><label for="oPhone">Your phone <span style="font-weight:700;color:var(--muted)">(we'll text you when it's ready)</span></label><input id="oPhone" type="tel" inputmode="tel" placeholder="(812) 555-0142"></div>
+      <div class="field"><label for="oPhone">Your phone <span style="font-weight:700;color:var(--muted)">(in case we need to reach you)</span></label><input id="oPhone" type="tel" inputmode="tel" placeholder="(812) 555-0142"></div>
       <div class="field"><label for="oNote">Notes</label><input id="oNote" placeholder="Extra napkins please"></div>
       <div class="field pay-choice" id="payChoice" style="display:none">
         <label>How do you want to pay?</label>
@@ -1026,7 +1026,7 @@ function renderReceipt(r){
   $("#tTotal").textContent=r.total;
   if(!r.sent){
     const txt=orderText(r);
-    $("#sentMsg").textContent=SHEET?`We couldn't reach the truck's order system. Text this order to ${SITE.phone} instead:`:`Last step: text this order to ${SITE.phone}. We'll text you back when it's ready.`;
+    $("#sentMsg").textContent=SHEET?`We couldn't reach the truck's order system. Text this order to ${SITE.phone} instead:`:`Last step: text this order to ${SITE.phone}.`;
     $("#orderText").textContent=txt;
     $("#smsLink").href=`sms:${SITE.phoneDigits}?&body=${encodeURIComponent(txt)}`;
     $("#sent").style.display="block";
@@ -1044,7 +1044,7 @@ $("#sendOrder").onclick=async()=>{
   const name=$("#oName").value.trim(),notes=$("#oNote").value.trim();
   if(!name){$("#oErr").textContent="Enter a name for the order";return}
   const digits=$("#oPhone").value.replace(/\D/g,"").replace(/^1(?=\d{10}$)/,"");
-  if(digits.length!==10){$("#oErr").textContent="Enter a 10-digit phone number so we can text you when it's ready";return}
+  if(digits.length!==10){$("#oErr").textContent="Enter a 10-digit phone number in case we need to reach you";return}
   const payNow=!!PAYURL&&(document.querySelector('input[name=payWay]:checked')||{}).value==="now";
   const total=cart.reduce((a,c)=>a+c.qty*c.price,0);
   const r={name,phone:`(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`,notes,
