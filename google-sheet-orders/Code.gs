@@ -236,6 +236,8 @@ function setupMenu_() {
   let sh = ss.getSheetByName(MENU_SHEET);
   const isNew = !sh;
   if (!sh) sh = ss.insertSheet(MENU_SHEET);
+  // Clear old dropdown rules first so renamed sections can be written.
+  sh.getRange(1, 1, sh.getMaxRows(), 5).clearDataValidations();
   if (isNew || sh.getLastRow() < 2) {
     sh.clear();
     sh.appendRow(["Section (website tab)", "Item (don't change the name)", "Price", "Online status", "Description (new items only)"]);
