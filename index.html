@@ -58,7 +58,9 @@ header{position:sticky;top:0;z-index:40;background:var(--yellow);border-bottom:4
 .hero{position:relative;background:linear-gradient(135deg,var(--yellow) 0%,var(--gold) 55%,var(--orange) 100%);overflow:hidden;padding:40px 0 70px}
 .hero::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(214,40,40,.35) 2.2px,transparent 2.6px);background-size:16px 16px;-webkit-mask:radial-gradient(circle at 100% 0,#000 0,transparent 45%),radial-gradient(circle at 0 100%,#000 0,transparent 40%);mask:radial-gradient(circle at 100% 0,#000 0,transparent 45%),radial-gradient(circle at 0 100%,#000 0,transparent 40%)}
 .hero-grid{position:relative;display:grid;grid-template-columns:1.05fr 1fr;gap:20px;align-items:center}
-.kicker{display:inline-block;background:var(--green);color:#fff;font-weight:900;font-size:.8rem;letter-spacing:1.2px;padding:6px 14px;border-radius:999px}
+.kicker{display:inline-block;background:var(--green);color:#fff;font-weight:900;font-size:.8rem;letter-spacing:1px;padding:6px 14px;border-radius:999px}
+@media(max-width:480px){.kicker{font-size:.66rem;letter-spacing:.4px;padding:5px 10px;white-space:nowrap}}
+@media(max-width:380px){.kicker{font-size:.58rem;letter-spacing:.1px;padding:5px 8px}}
 .hero h1{font-size:clamp(4rem,10vw,7.4rem);color:var(--red);margin:12px 0 0;text-shadow:4px 4px 0 #fff,8px 8px 0 rgba(0,0,0,.12);transform:rotate(-2deg);transform-origin:left}
 .hero .tag{font-family:Caveat,cursive;font-size:2.3rem;color:var(--green-dark);margin:2px 0 12px;transform:rotate(-2deg)}
 .hero p.lead{font-size:1.15rem;font-weight:600;max-width:470px;margin:0 0 22px}
@@ -540,7 +542,7 @@ const SIDES = [
 <div class="hero" id="top">
   <div class="wrap hero-grid">
     <div>
-      <span class="kicker">KASANTÚ WEST AFRICAN CUISINE · UPON REQUEST</span>
+      <span class="kicker">KASANTÚ WEST AFRICAN · COMING SOON / UPON REQUEST</span>
       <h1>Hot Diggity Dog!</h1>
       <div class="tag">just doggin' around...</div>
       <p class="lead">Thirteen signature dogs, build-your-own with 16 toppings, crispy chicken, loaded nachos, lemon shake-ups, and the one and only Pork Parfait, served hot from the big yellow truck.</p>
@@ -728,7 +730,7 @@ const SIDES = [
   <img class="fm" src="img/mascot.png" alt="">
   <div class="wrap">
     <div class="name">Hot Diggity Dog</div>
-    <p style="margin:2px 0 12px;font-weight:700">Kasantú West African Cuisine (available upon request) · Just doggin' around</p>
+    <p style="margin:2px 0 12px;font-weight:700">Kasantú West African Cuisine (coming soon / upon request) · Just doggin' around</p>
     <p id="footContact" style="margin:0 0 10px;font-weight:800"></p>
     <small>© <span id="yr"></span> Hot Diggity Dog. Prices subject to change and don't include sales tax. No refunds for orders that aren't picked up.</small>
     <p class="credit">Website by Matthew Jake · <b>Cornerstone Forge</b> · <a href="mailto:mattjake1997@gmail.com?subject=Website%20inquiry">mattjake1997@gmail.com</a></p>
