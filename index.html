@@ -352,6 +352,18 @@ footer .credit a{color:#fff;text-decoration:underline}
 .hdc-btn{margin-top:12px;font:inherit;font-weight:900;background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:999px;padding:9px 18px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;transform:rotate(-1deg)}
 .hdc-btn:hover{transform:rotate(0) translateY(-1px)}
 .hdc-sheet{max-width:640px}
+.pop-btns{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.kas-btn{background:var(--green);color:#fff}
+.kas-sheet{max-width:760px}
+.kas-pill{display:inline-block;margin:0 0 8px;background:var(--green);color:var(--yellow);font-weight:900;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:999px;border:2px solid var(--ink)}
+.kas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:600px){.kas-grid{grid-template-columns:repeat(2,1fr)}}
+.kas-card{background:#fff;border:3px solid var(--ink);border-radius:14px;overflow:hidden;box-shadow:3px 3px 0 var(--green)}
+.kas-card img{display:block;width:100%;aspect-ratio:1;object-fit:cover;border-bottom:3px solid var(--ink)}
+.kas-card h4{margin:0;padding:8px 10px 2px;font-weight:900;font-size:.92rem;line-height:1.2}
+.kas-card small{display:block;padding:0 10px 9px;color:var(--muted);font-weight:700;font-size:.78rem}
+.kas-card .veg{color:var(--green)}
+.k-all{display:inline-block;margin-top:10px;background:#fff;color:var(--ink);font-weight:900;font-size:.85rem;border:2.5px solid var(--ink);border-radius:999px;padding:5px 12px;cursor:pointer;box-shadow:2px 2px 0 var(--ink);font-family:inherit}
 .hdc-note{margin:0 0 10px;font-weight:800;color:var(--muted)}
 .hdc-img{display:block;width:100%;height:auto;border-radius:12px;border:3px solid var(--ink)}
 .hdc-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
@@ -572,7 +584,7 @@ const SIDES = [
     <div class="section-head">
       <h2 class="menu-title">The Menu</h2>
       <p id="menuSub">Tap a section, then add items to order ahead for pickup.</p>
-      <button type="button" class="hdc-btn" id="hdcOpen">🌭 Hot Dog Cart menu</button>
+      <div class="pop-btns"><button type="button" class="hdc-btn" id="hdcOpen">🌭 Hot Dog Cart menu</button><button type="button" class="hdc-btn kas-btn" id="kasOpen">🌍 Kasantú West African menu</button></div>
     </div>
     <div class="closed-banner" id="closedBanner" style="display:none"></div>
     <a class="btn btn-red square-cta" id="squareCta" target="_blank" rel="noopener" style="display:none">Order ahead on Square →</a>
@@ -747,6 +759,17 @@ const SIDES = [
   </div>
 </div>
 
+<div class="overlay" id="kasOverlay" role="dialog" aria-modal="true" aria-label="Kasantú West African menu">
+  <div class="sheet hdc-sheet kas-sheet">
+    <div class="sheet-head"><h2>Kasantú West African</h2><button class="x" id="kasClose" aria-label="Close">×</button></div>
+    <p class="kas-pill">Coming soon / upon request</p>
+    <p class="hdc-note">These dishes are currently only available upon request. Contact us for more information.</p>
+    <div class="kas-grid" id="kasGrid"></div>
+    <div class="hdc-btns"><a class="btn btn-red" id="kasCall">📞 Call us</a><a class="btn btn-light" id="kasMail">✉️ Email us</a></div>
+    <p style="text-align:center;margin:12px 0 0"><a href="african.html" style="font-weight:900;color:var(--green)">Open as its own page →</a></p>
+  </div>
+</div>
+
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="Your order">
   <div class="sheet">
     <div id="cartView">
@@ -902,7 +925,7 @@ const pr=p=>(+p)%1?(+p).toFixed(2):p;
 const NEWB=it=>it&&it.isNew?'<span class="newb">NEW</span>':"";
 function drawMenu(){
 if(K.show===false)$("#kasantu").style.display="none";
-else $("#kSlot").innerHTML=(K.specialOrder?`<div class="k-note"><b>Coming soon!</b> Kasantú dishes are currently only available upon request. Contact us for more information.<div class="k-contact"><a href="tel:${SITE.phoneDigits}">📞 Call us</a><a href="mailto:${SITE.email}?subject=Kasant%C3%BA%20request">✉️ Email us</a></div></div>`:"")+(((K.name&&!K.hidden)||EXTRA.some(e=>e.sec==="african"))
+else $("#kSlot").innerHTML=(K.specialOrder?`<div class="k-note"><b>Coming soon!</b> Kasantú dishes are currently only available upon request. Contact us for more information.<br><button type="button" class="k-all">🌍 See all Kasantú dishes</button><div class="k-contact"><a href="tel:${SITE.phoneDigits}">📞 Call us</a><a href="mailto:${SITE.email}?subject=Kasant%C3%BA%20request">✉️ Email us</a></div></div>`:"")+(((K.name&&!K.hidden)||EXTRA.some(e=>e.sec==="african"))
   ?((K.name&&!K.hidden)?`<div class="k-dish">${K.img?`<img src="${K.img}" alt="${esc(K.name)}" loading="lazy">`:""}<div class="kb"><h4>${K.name}</h4>${K.desc?`<p>${K.desc}${K.limited&&!K.specialOrder?" · seasonal or limited":""}</p>`:""}${K.price!=null?`<span class="ptag sm">$${K.price}</span>`:""}${K.specialOrder?`<a class="k-special" href="mailto:${SITE.email}?subject=Kasant%C3%BA%20request%3A%20${encodeURIComponent(K.name)}">✉️ Available upon request</a>`:addBtn({name:K.name,price:K.price||0,limited:K.limited})}</div></div>`:"")
    +EXTRA.filter(e=>e.sec==="african").map(e=>`<div class="k-dish k-new"><div class="k-ph">🍲</div><div class="kb"><h4>${e.name} ${NEWB(e)}</h4>${e.desc?`<p>${e.desc}</p>`:""}<span class="ptag sm">$${pr(e.price)}</span>${addBtn(e)}</div></div>`).join("")
   :`<div class="k-soon"><b>Coming soon</b>West African specials. Ask at the window!</div>`);
@@ -934,6 +957,28 @@ $("#sideList").innerHTML=SV.map(sideLine).join("")+(SV.some(s=>s.limited)?`<p cl
   updateDropLabel();
 }
 drawMenu();
+
+/* Kasantú West African menu pop-up (dishes are upon request) */
+const KAS_DISHES=[
+  {n:"Foufou with Chicken & Peanut Sauce",img:"img/k-foufou.jpg"},
+  {n:"Chicken in Peanut Sauce over White Rice",img:"img/k-chicken-rice.jpg"},
+  {n:"Bean Fritters",img:"img/k-fritters.jpg",veg:true},
+  {n:"Rice & Black-Eyed Peas with Red Pepper Sauce",img:"img/k-rice-beans.jpg"},
+  {n:"Chicken Drumsticks with Rice & Black-Eyed Peas",img:"img/k-drumsticks.jpg"},
+  {n:"Vegetarian Rice with Sweet Peppers",img:"img/k-veg-rice.jpg",veg:true},
+];
+(function(){
+  const o=$("#kasOverlay");let built=false;
+  const close=()=>{o.classList.remove("open");document.body.style.overflow=""};
+  const open=()=>{if(!built){$("#kasGrid").innerHTML=KAS_DISHES.map(d=>`<div class="kas-card"><img src="${d.img}" alt="${esc(d.n)}" loading="lazy"><h4>${d.n}</h4><small>${d.veg?'<b class="veg">🌱 Vegetarian</b> · ':''}Upon request</small></div>`).join("");built=true}
+    $("#kasCall").href="tel:"+SITE.phoneDigits;$("#kasMail").href="mailto:"+SITE.email+"?subject=Kasant%C3%BA%20request";
+    o.classList.add("open");document.body.style.overflow="hidden"};
+  $("#kasOpen").onclick=open;
+  document.addEventListener("click",e=>{if(e.target.closest(".k-all"))open()});
+  $("#kasClose").onclick=close;
+  o.addEventListener("click",e=>{if(e.target===o)close()});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&o.classList.contains("open"))close()});
+})();
 
 /* hot dog cart menu pop-up */
 (function(){
